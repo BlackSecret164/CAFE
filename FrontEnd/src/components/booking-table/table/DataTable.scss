@@ -1,0 +1,119 @@
+@import "../../../scss/variables";
+
+.table-booking {
+  display: flex;
+  flex-direction: column; /* Xếp chồng các thành phần theo chiều dọc */
+  align-items: center; /* Căn giữa theo chiều ngang */
+  justify-content: center; /* Căn giữa theo chiều dọc */
+  height: 100vh; /* Chiều cao toàn màn hình */
+  padding: 20px; /* Khoảng cách từ các cạnh */
+  box-sizing: border-box; /* Bao gồm cả padding khi tính kích thước */
+  background-color: get-color($theme-colors, "background-light"); /* Tùy chỉnh nền nếu cần */
+}
+
+.content-container {
+  display: flex; /* Hiển thị các thành phần con theo hàng ngang */
+  flex-direction: row; /* Sắp xếp các thành phần theo chiều ngang */
+  align-items: flex-start; /* Căn hai thành phần từ trên xuống */
+  justify-content: space-between; /* Khoảng cách giữa các thành phần */
+  gap: 20px; /* Khoảng cách giữa bảng và cột Order */
+  max-width: 1200px; /* Giới hạn chiều rộng */
+  width: 100%; /* Chiếm toàn bộ chiều rộng container */
+  margin: 0 auto; /* Căn giữa toàn bộ nội dung */
+}
+
+.grid-page {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+  padding-left: 40px;
+}
+
+.table-grid {
+  position: relative;
+  place-items: center;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); // 4 nút trên mỗi dòng
+  gap: 20px;
+  padding: 40px;
+}
+
+.add-table-box {
+  position: relative;
+  flex: 1;
+  width: 762px;
+  height: 747px;
+  border-radius: 12px;
+  background-color: get-color($theme-colors, "background");
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.table-button {
+  width: 140px;
+  height: 99px;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  background-color: get-color($primary,"200"); // Màu "available"
+  color: $white;
+}
+
+.table-button.selected {
+  background-color: $purple; // Màu "selecting"
+}
+
+.table-button.reserved {
+  background-color: get-color($accent, "200"); // Màu "reserved"
+}
+
+.table-button.occupied {
+  background-color: get-color($neutral, "300"); // Màu "occupied"
+}
+
+.table-button:hover {
+  opacity: 0.9;
+}
+
+.table-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Khoảng cách giữa các nhóm chú thích */
+  margin: 20px 0; /* Khoảng cách giữa chú thích và bảng */
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Khoảng cách giữa biểu tượng và text */
+  font-size: 14px; /* Kích thước chữ */
+  color: #555; /* Màu chữ */
+}
+
+.circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.selecting {
+  background-color: $purple; // Màu "selecting"
+}
+
+.available {
+  background-color: get-color($primary,"200"); // Màu "available"
+}
+
+.occupied {
+  background-color: get-color($neutral, "300"); // Màu "occupied"
+}
+
+.reserved {
+  background-color: get-color($accent, "200"); // Màu "reserved"
+}
+

@@ -1,0 +1,29 @@
+@import "../../scss/variables";
+
+.create-event-btn {
+    border: 1px solid #d1d5db; // Gray 300
+    padding: 0.5rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease-in-out;
+  
+    &:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); // Hover shadow
+    }
+  
+    .event-icon {
+      width: 1.75rem; // 7 * 0.25rem
+      height: 1.75rem;
+    }
+  
+    .event-text {
+      padding-left: 0.75rem; // 3 * 0.25rem
+      padding-right: 1.75rem; // 7 * 0.25rem
+      font-size: 1rem;
+      color: #4b5563; // Gray 500
+      font-weight: 500;
+    }
+  }
+  

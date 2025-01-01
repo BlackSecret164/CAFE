@@ -1,0 +1,41 @@
+@import "../../scss/variables";
+
+.navbar-custom {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  padding: 20px 32px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #bcbaba;
+
+  .breadcrumb-item {
+    margin: 0;
+    text-decoration: none;
+    font-family: $font-family;
+    a {
+      color: #bcbaba;
+      text-decoration: none;
+      pointer-events: auto;
+      &:hover {
+        text-decoration: underline;
+        color: #1c1c1c;
+      }
+    }
+  }
+  @media (max-width: 992px) {
+    font-size: 14px;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+}
+
+.breadcrumb-item.active {
+  color: #1c1c1c;
+  font-family: $font-family;
+}

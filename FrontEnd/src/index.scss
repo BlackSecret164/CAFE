@@ -1,0 +1,10 @@
+// Override default variables before the import
+// $primary: #d71f20;
+
+// Import Bootstrap and its default variables
+@import '~bootstrap/scss/bootstrap.scss';
+@import 'scss/variables';
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';

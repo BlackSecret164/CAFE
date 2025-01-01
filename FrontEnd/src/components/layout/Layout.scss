@@ -1,0 +1,41 @@
+@import "../../scss/variables";
+:root {
+  --sidebar-width: 282px;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: get-color($background, "100");
+  z-index: 100;
+  padding: 18px 0px 0 23px;
+}
+
+.navbar {
+  z-index: 100;
+  flex-grow: 1;
+  width: 100%;
+  padding: 0;
+}
+
+.content {
+  width: calc(100% - var(--sidebar-width) - 40px);
+  flex-grow: 1;
+  padding: 0;
+  height: 100%;
+  color: #2f4156;
+}
+
+// .content:before {
+//   margin-left: var(--sidebar-width);
+//   content: " ";
+//   display: block;
+//   position: absolute;
+//   left: 0;
+//   top: 0;
+//   width: calc(100% - var(--sidebar-width));
+//   height: 100%;
+//   opacity: 0.2;
+//   background-repeat: no-repeat;
+//   background-position: center;
+//   background-size: 30vw auto;
+// }

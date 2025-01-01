@@ -1,0 +1,35 @@
+@import "../../../scss//variables";
+.tab-layout-div {
+  display: flex;
+  width: 100%;
+  height: fit-content;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  gap: 32px;
+}
+
+.material-list-layout {
+  padding-top: 26px;
+  padding-left: 5px;
+  padding-right: 29px;
+  padding-bottom: 40px;
+  align-items: start;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: white;
+  gap: 12px;
+}
+
+.title-text {
+  display: flex;
+  width: fit-content;
+  height: fit-content;
+  font-size: get-font-size($title-font-size, sm);
+  font-weight: get-font-weight($font-weight, bold);
+  font-family: $font-family;
+  margin: 0;
+}

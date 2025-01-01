@@ -1,0 +1,46 @@
+@import "../../../scss/variables";
+
+.action-button {
+    display: flex;
+    align-items: center;
+  
+    button {
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 50%;
+      background-color: get-color($primary, "100");
+      color: get-color($neutral, "100");
+      text-align: center;
+      cursor: pointer;
+      bottom: 30px;
+      font-weight: bold;
+
+      &:hover {
+        background-color: get-color($primary, "200");
+        }
+    
+
+      span {
+        font-size: 1rem;
+        font-weight: bold;
+        color: get-color($primary, "100");
+      }
+
+      &:disabled {
+        background: #c8d9e6;
+        cursor: not-allowed;
+      }
+    }
+  
+    .increase {
+      margin-right: 10px;
+    }
+    
+    .count {
+      margin: 0 10px;
+      font-size: 16px;
+      font-weight: normal;
+    }
+  }
+  

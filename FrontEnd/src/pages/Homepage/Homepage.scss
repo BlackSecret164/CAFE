@@ -1,0 +1,111 @@
+.homepage {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: 100vh; /* Chiều cao 100% màn hình */
+  width: 100vw;  /* Chiều rộng 100% màn hình */
+  padding: 2rem;
+  box-sizing: border-box;
+  background-color: #f1f5f9;
+  overflow: hidden;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; 
+  flex: 1; 
+}
+
+.header {
+  font-size: 5rem;
+  color: #334155;
+  text-align: center;
+  font-weight: bolder;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  //margin-top: 1.5rem;
+  text-align: start;
+  left: 0;
+  width: 100%;
+}
+.left-container {
+  margin-left: 10%;
+  width: 40%; /* Chiếm 70% chiều ngang */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 2rem; /* Thêm khoảng cách từ bên trái */
+}
+
+.right-container {
+  width: 60%; /* Chiếm 30% chiều ngang */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slogan-line {
+  font-size: 3rem;
+  text-align: left;
+}
+
+.slogan-line-2 {
+  font-size: 3rem;
+  text-align: right;
+}
+
+.slogan-text {
+  color: #525252;
+}
+
+.slogan-highlight {
+  color: #334155;
+}
+
+.quote {
+  font-size: 1.25rem;
+  color: #525252;
+  text-align: left;
+  margin-left: 12%;
+  margin-top: 1rem;
+}
+
+.login-button {
+  margin-top: 2rem;
+  padding: 1rem 2rem;
+  background-color: #334155;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  max-width: 140px;
+  text-align: center;
+  justify-content: center;
+  margin-left: 30%;
+
+
+  &:hover {
+    background-color: #283040;
+  }
+}
+
+.image-container {
+  position: absolute; /* Đặt vị trí tuyệt đối cho ảnh */
+  bottom: -5%; /* Căn chỉnh dưới cùng */
+  right: -7%; /* Căn chỉnh bên phải */
+  padding: 1rem;
+
+  .cafe-image {
+    max-width: 100%; /* Đặt chiều rộng tối đa là 100% */
+    max-height: 600px; /* Đặt chiều cao tối đa */
+    width: auto; /* Điều chỉnh tự động theo tỉ lệ */
+    height: auto; /* Điều chỉnh tự động theo tỉ lệ */
+    object-fit: contain; /* Đảm bảo ảnh giữ tỉ lệ */
+  }
+}

@@ -1,0 +1,151 @@
+@import "../../../../../scss/variables";
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); // cài đặt màu đen với độ trong suốt 50%
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000; // ở trên cả modal-content
+}
+
+.modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  background-color: get-color($secondary, "200");
+  border: get-color($primary, "100") 2px solid;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0px 4px 8px get-color($neutral, "300");
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  z-index: 1001; // Ensure it stays above the overlay background
+
+  .close-button {
+    position: absolute;
+    top: 23px;
+    right: 30px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: get-color($primary, "100");
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+
+    &:hover {
+      color: get-color($primary, "100");
+    }
+  }
+}
+
+.title-add {
+  font-size: 1.5em;
+  font-weight: bolder;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.add-info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.row-1 {
+  display: flex;
+  gap: 5%;
+  align-items: flex-start;
+
+  .label {
+    color: get-color($primary, "100");
+  }
+
+  .staff-name {
+    left: 0;
+    width: calc(70%); // Set width for customer name
+    
+  }
+  
+  .staff-gender {
+    width: calc(23%); // Set a fixed width for customer gender
+    max-width: 100%; // Ensure it does not exceed its container
+  }
+}
+
+.row-2 {
+  display: flex;
+  gap: 5%;
+  align-items: baseline;
+
+  .label {
+    color: get-color($primary, "100");
+  }
+
+  .staff-role {
+    width: calc(50%); // Set width for staff name
+    
+  }
+  .staff-birthday {
+    width: calc(50%); // Set a fixed width for staff gender
+    max-width: 100%; // Ensure it does not exceed its container
+  }
+}
+
+.staff-id {
+  width: 70%;
+}
+.staff-phone {
+  width: 100%;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 10px 0;
+
+  .button-cancel {
+    background-color: transparent;
+    color: get-color($primary,"200");
+    border: get-color($primary,"200") 1px solid;
+
+    &:hover {
+      background-color: get-color($primary,"100");
+      color: get-color($accent,"100");
+    } 
+
+
+  }
+
+  .button-edit {
+    background-color: get-color($primary,"200");
+    color: white;
+    border: get-color($primary,"200") 1px solid;
+
+    &:hover {
+      background-color: get-color($primary,"100");
+    }
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+  .modal-content {
+    padding: 15px;
+  }
+
+  .button-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

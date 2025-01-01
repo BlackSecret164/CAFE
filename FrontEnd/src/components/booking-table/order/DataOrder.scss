@@ -1,0 +1,63 @@
+@import "../../../scss/variables";
+.order-info {
+    flex: 0.4; /* Chiếm 40% chiều rộng container */
+    min-width: 300px; /* Chiều rộng tối thiểu cho cột Order */
+    height: fit-content;
+    border-radius: 12px;
+    background-color: get-color($theme-colors, "secondary");
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .order-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: get-color($theme-colors, "primary");
+    }
+
+    .order-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 14px;
+
+      .detail-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: get-color($theme-colors, "text-secondary");
+      }
+    }
+
+    .order-actions {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      button {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &.service {
+          background-color: get-color($primary, "200");
+          color: $white;
+          border: none;
+        }
+
+        &.clear {
+          background-color: transparent;
+          border: 1px solid get-color($neutral, "300");
+          color: get-color($neutral, "300");
+        }
+      }
+    }
+}
+  

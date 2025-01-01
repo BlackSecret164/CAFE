@@ -1,0 +1,175 @@
+@import "../../../scss/variables";
+
+.menu-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+
+  .left-side {
+    flex: 1 1 50%;
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .menu-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+
+      .menu-item {
+        display: flex;
+        width: calc(50% - 30px);
+        background-color: get-color($background, "100");
+        border: 1px solid get-color($neutral, "200");
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        .item-picture {
+          position: relative;
+          //flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background-color: get-color($neutral, "100");
+
+          .item-image {
+            object-fit: cover;
+            border-radius: 8px;
+          }
+
+          .item-quantity {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 10px;
+          }
+        }
+
+        .item-right {
+          padding: 1rem;
+
+          .item-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: start;
+          }
+
+          .item-mood,
+          .item-size-selector, 
+          .item-price-display {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 1rem;
+            margin: 0.5rem 0;
+            ;
+
+            label {
+              font-size: 1rem;
+              //font-weight: bold;
+              margin-bottom: 0.5rem;
+              text-align: start;
+              color: get-color($primary, "100");
+            }
+            .size-label {
+              margin-right: 1rem;
+            }
+            .price-label {
+              margin-right: 1rem;
+            }
+
+            .mood-options,
+            .size-options {
+              display: flex;
+              gap: 0.5rem;
+              align-items: center;
+              margin-left: 10px;
+              cursor: pointer;
+
+              &.price-options{
+                margin-right: 0.5rem;
+              }
+            }
+
+            .mood-button,
+            .size-button {
+              padding: 3px 10px;
+              font-size: 0.9rem;
+              border: 1.5px solid get-color($primary, "100");
+              border-radius: 20px;
+              background-color: transparent;
+              cursor: pointer;
+              transition: all 0.1s;
+
+              &.active {
+                background-color: get-color($primary, "100");
+                color: get-color($neutral, "100");
+                font-weight:normal;
+              }
+              
+              &:hover {
+                background-color: get-color($secondary, "100");
+                color: get-color($primary, "200");
+              }
+            }
+
+            .price-tag {
+              font-size: 14px;
+              padding: 5px 8px;
+          
+              &.highlight {
+                color: get-color($primary, "100");
+                font-weight: bold;
+              }
+            }
+          }
+        }
+        .button-order {
+          justify-content: center;
+          width: 60%;
+          padding: 0.5rem;
+          font-size: 1rem;
+          margin: 0 3rem;
+          font-weight: normal;
+          background-color: transparent;
+          border: 1.5px solid get-color($primary, "100");
+          border-radius: 12px;
+          cursor: pointer;
+    
+          &.active {
+            font-weight: bold;
+            background-color: get-color($primary, "100");
+            color: get-color($neutral, "100");
+          }
+
+          &:hover {
+            background-color: get-color($primary, "200");
+            color: get-color($neutral, "100");
+          }
+        }
+      }
+    }
+
+    .pagination {
+      margin-top: 10px;
+      bottom: 0;
+    }
+  }
+
+  .right-side {
+    flex: 1;
+    border: 1px solid get-color($neutral, "200");
+    border-radius: 8px;
+    //padding: 10px;
+    margin-top: -28px;
+    //margin-right: -30px;
+    background-color: get-color($neutral, "100");
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}

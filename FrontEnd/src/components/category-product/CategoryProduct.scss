@@ -1,0 +1,26 @@
+@import "../../scss/variables";
+.category-filter {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+  
+    .category-button {
+      padding: 8px 12px;
+      border: 1px solid get-color($primary, "100");
+      border-radius: 20px;
+      background-color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+  
+      &.active {
+        background-color: get-color($primary, "100");
+        color: get-color($neutral, "100");
+      }
+  
+      &:hover {
+        background-color: get-color($primary, "200");
+      }
+    }
+  }
+  

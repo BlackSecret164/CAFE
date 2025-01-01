@@ -1,0 +1,14 @@
+@import "../../scss/variables";
+.search-bar {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+  
+    input {
+      width: 50%;
+      padding: 10px;
+      border: 1px solid get-color($primary, "100");
+      border-radius: 20px;
+    }
+  }
+  
