@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get("/", async (req, res) =>{
+app.get("/staff", async (req, res) =>{
     const client = await pool.connect();
 
     try {
