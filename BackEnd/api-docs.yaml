@@ -27,7 +27,25 @@ tags:
       description: Find out more about our product
       url: http://swagger.io
   - name: staff
-    description: About staff
+    description: Manage staff
+    externalDocs:
+      description: Find out more about staff
+      url: http://swagger.io
+  - name: table
+    description: Manage tables
+    externalDocs:
+      description: Find out more about table
+      url: http://swagger.io
+  - name: material
+    description: Manage raw materials
+    externalDocs:
+      description: Find out more about materials
+      url: http://swagger.io
+  - name: order
+    description: Manage orders
+    externalDocs:
+      description: Find out more about order
+      url: http://swagger.io
 paths:
   /customer:
     get:
@@ -210,6 +228,397 @@ paths:
         - cfwfenstore_auth:
             - write:customers
             - read:customers
+  /staff:
+    get:
+      tags:
+        - staff
+      summary: Get list of staff
+      description: Retrieve a list of all staff
+      operationId: getStaff
+      responses:
+        '200':
+          description: A list of staff
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Staff'
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - staff
+      summary: Add a new staff
+      description: Add a new staff to the system
+      operationId: addStaff
+      requestBody:
+        description: Staff object to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Staff'
+      responses:
+        '200':
+          description: Staff added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+        '400':
+          description: Invalid input
+  /product:
+    get:
+      tags:
+        - product
+      summary: Get list of products
+      description: Retrieve a list of all products
+      operationId: getProducts
+      responses:
+        '200':
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - product
+      summary: Add a new product
+      description: Add a new product to the system
+      operationId: addProduct
+      requestBody:
+        description: Product object to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid input
+  /table:
+    get:
+      tags:
+        - table
+      summary: Get list of tables
+      description: Retrieve a list of all tables
+      operationId: getTables
+      responses:
+        '200':
+          description: A list of tables
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Table'
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - table
+      summary: Add a new table
+      description: Add a new table to the system
+      operationId: addTable
+      requestBody:
+        description: Table object to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Table'
+      responses:
+        '200':
+          description: Table added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+        '400':
+          description: Invalid input
+  /material:
+    get:
+      tags:
+        - material
+      summary: Get list of raw materials
+      description: Retrieve a list of all raw materials
+      operationId: getMaterials
+      responses:
+        '200':
+          description: A list of raw materials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Material'
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - material
+      summary: Add a new raw material
+      description: Add a new raw material to the system
+      operationId: addMaterial
+      requestBody:
+        description: Raw material object to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Material'
+      responses:
+        '200':
+          description: Material added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Material'
+        '400':
+          description: Invalid input
+  /order:
+    get:
+      tags:
+        - order
+      summary: Get list of orders
+      description: Retrieve a list of all orders
+      operationId: getOrders
+      responses:
+        '200':
+          description: A list of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - order
+      summary: Create a new order
+      description: Create a new order in the system
+      operationId: addOrder
+      requestBody:
+        description: Order object to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid input
+    put:
+      tags:
+        - staff
+      summary: Update an existing staff member
+      operationId: updateStaff
+      requestBody:
+        description: Updated staff data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Staff'
+      responses:
+        '200':
+          description: Staff member updated
+    delete:
+      tags:
+        - staff
+      summary: Delete a staff member
+      operationId: deleteStaff
+      parameters:
+        - name: staffId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Staff member deleted
+
+  /product/{productId}:
+    get:
+      tags:
+        - product
+      summary: Get a product by ID
+      operationId: getProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product retrieved
+    put:
+      tags:
+        - product
+      summary: Update a product
+      operationId: updateProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated product data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product updated
+    delete:
+      tags:
+        - product
+      summary: Delete a product
+      operationId: deleteProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Product deleted
+
+  /table/{tableId}:
+    put:
+      tags:
+        - table
+      summary: Update table status
+      operationId: updateTable
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated table data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Table'
+      responses:
+        '200':
+          description: Table updated
+    delete:
+      tags:
+        - table
+      summary: Delete a table
+      operationId: deleteTable
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Table deleted
+
+  /material/{materialId}:
+    put:
+      tags:
+        - material
+      summary: Update material details
+      operationId: updateMaterial
+      parameters:
+        - name: materialId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated material data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RawMaterial'
+      responses:
+        '200':
+          description: Material updated
+    delete:
+      tags:
+        - material
+      summary: Delete a material
+      operationId: deleteMaterial
+      parameters:
+        - name: materialId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Material deleted
+
+  /order/{orderId}:
+    put:
+      tags:
+        - order
+      summary: Update an order
+      operationId: updateOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated order data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Order updated
+    delete:
+      tags:
+        - order
+      summary: Delete an order
+      operationId: deleteOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Order deleted
 components:
   schemas:
     Customer:
@@ -285,6 +694,120 @@ components:
           type: string
       xml:
         name: '##default'
+    Staff:
+      type: object
+      properties:
+        staffID:
+          type: integer
+        fullName:
+          type: string
+        gender:
+          type: string
+        birth:
+          type: string
+          format: date
+        address:
+          type: string
+        phoneStaff:
+          type: string
+        workShiftID:
+          type: integer
+        workHours:
+          type: number
+          format: float
+        salary:
+          type: number
+          format: float
+        typeStaff:
+          type: string
+        startDate:
+          type: string
+          format: date
+        activeStatus:
+          type: boolean
+        roleID:
+          type: integer
+        password:
+          type: string
+    Product:
+      type: object
+      properties:
+        productID:
+          type: integer
+        productName:
+          type: string
+        price_S:
+          type: number
+          format: float
+        price_M:
+          type: number
+          format: float
+        price_L:
+          type: number
+          format: float
+        size:
+          type: string
+        category:
+          type: string
+        imageURL:
+          type: string
+        hotOrCold:
+          type: string
+        available:
+          type: boolean
+    Table:
+      type: object
+      properties:
+        tableID:
+          type: integer
+        status:
+          type: string
+        phoneOrder:
+          type: string
+        bookingTime:
+          type: string
+          format: date-time
+        seatingTime:
+          type: string
+          format: date-time
+    Material:
+      type: object
+      properties:
+        materialID:
+          type: integer
+        materialName:
+          type: string
+        quantityImported:
+          type: integer
+        quantityStock:
+          type: integer
+        price:
+          type: number
+          format: float
+        storageType:
+          type: string
+        importDate:
+          type: string
+          format: date
+        expiryDate:
+          type: string
+          format: date
+    Order:
+      type: object
+      properties:
+        orderID:
+          type: integer
+        phoneCustomer:
+          type: string
+        serviceType:
+          type: string
+        totalPrice:
+          type: number
+          format: float
+        staffID:
+          type: integer
+        tableID:
+          type: integer
   requestBodies:
     Customer:
       description: Customer object that needs to be added to the store

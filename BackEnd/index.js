@@ -79,6 +79,26 @@ app.post("/customer", async (req, res) => {
     }
 });
 
+app.put("/customer", async (req, res) => {
+    const { fullname, phonecustomer, gender, registrationdate } = req.body;
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            UPDATE customer
+            SET fullname = $1, gender= $3, registrationdate = $4
+            WHERE phonecustomer = $2
+        `;
+        await client.query(query, [ fullname, phonecustomer, gender, registrationdate]);
+        res.status(201).send({ message: "Customer edited successfully!" });
+    } catch (error) {
+        console.error("Error adding customer:", error);
+        res.status(500).send({ message: "Failed to edited customer" });
+    } finally {
+        client.release();
+    }
+});
+
 app.get("/material", async (req, res) =>{
     const client = await pool.connect();
 
