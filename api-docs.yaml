@@ -15,6 +15,7 @@ externalDocs:
   url: http://swagger.io
 servers:
   - url: http://localhost:3000
+  - url: https://cafe-k5p5.onrender.com
 tags:
   - name: customer
     description: Everything about your customer
@@ -564,7 +565,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RawMaterial'
+              $ref: '#/components/schemas/Material'
       responses:
         '200':
           description: Material updated
