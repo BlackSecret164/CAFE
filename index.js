@@ -78,6 +78,70 @@ app.get("/customer/list", async (req, res) =>{
     res.status(404);
 })
 
+app.get("/product/list", async (req, res) =>{
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query("SELECT * FROM product");
+
+        res.json(result.rows);
+    } catch (errors) {
+        console.log(errors)
+    } finally{
+        client.release();
+    }
+
+    res.status(404);
+})
+
+app.get("/table/list", async (req, res) =>{
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query("SELECT * FROM tables");
+
+        res.json(result.rows);
+    } catch (errors) {
+        console.log(errors)
+    } finally{
+        client.release();
+    }
+
+    res.status(404);
+})
+
+app.get("/material/list", async (req, res) =>{
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query("SELECT * FROM rawmaterial");
+
+        res.json(result.rows);
+    } catch (errors) {
+        console.log(errors)
+    } finally{
+        client.release();
+    }
+
+    res.status(404);
+})
+
+app.get("/order/list", async (req, res) =>{
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query("SELECT * FROM order_tb");
+
+        res.json(result.rows);
+    } catch (errors) {
+        console.log(errors)
+    } finally{
+        client.release();
+    }
+
+    res.status(404);
+})
+
 app.post("/customer", async (req, res) => {
     const { fullname, phonecustomer, gender, registrationdate } = req.body;
     const client = await pool.connect();
@@ -97,25 +161,52 @@ app.post("/customer", async (req, res) => {
     }
 });
 
+app.post("/staff", async (req, res) => {
+    const { fullname, phonestaff, birth, address, gender, typestaff, startdate } = req.body;
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            INSERT INTO staff (fullname, phonestaff, birth, address, gender, typestaff, startdate)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `;
+        await client.query(query, [ fullname, phonestaff, birth, address, gender, typestaff, startdate]);
+        res.status(201).send({ message: "Staff added successfully!" });
+    } catch (error) {
+        console.error("Error adding staff:", error);
+        res.status(500).send({ message: "Failed to add staff" });
+    } finally {
+        client.release();
+    }
+});
+
 app.put("/customer/:phonecustomer", async (req, res) => {
-    const { fullname, phonecustomer, gender, registrationdate } = req.body;
+    const { fullname, gender, registrationdate } = req.body; // Xóa phonecustomer khỏi body
+    const { phonecustomer } = req.params; // Lấy phonecustomer từ URL params
     const client = await pool.connect();
 
     try {
         const query = `
             UPDATE customer
-            SET fullname = $1, gender= $3, registrationdate = $4
-            WHERE phonecustomer = $2
+            SET fullname = $1, gender = $2, registrationdate = $3
+            WHERE phonecustomer = $4
         `;
-        await client.query(query, [ fullname, phonecustomer, gender, registrationdate]);
-        res.status(201).send({ message: "Customer edited successfully!" });
+        const result = await client.query(query, [fullname, gender, registrationdate, phonecustomer]);
+        
+        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Customer not found" });
+        }
+
+        res.status(200).send({ message: "Customer edited successfully!" });
     } catch (error) {
-        console.error("Error adding customer:", error);
-        res.status(500).send({ message: "Failed to edited customer" });
+        console.error("Error editing customer:", error);
+        res.status(500).send({ message: "Failed to edit customer" });
     } finally {
         client.release();
     }
 });
+
 
 app.delete("/customer/:phonecustomer", async (req, res) => {
     const { phonecustomer } = req.params; // Lấy phonecustomer từ params
@@ -193,21 +284,5 @@ app.get("/customer/:phonecustomer", async (req, res) => {
     }
 });
 
-
-app.get("/material/list", async (req, res) =>{
-    const client = await pool.connect();
-
-    try {
-        const result = await client.query("SELECT * FROM rawmaterial");
-
-        res.json(result.rows);
-    } catch (errors) {
-        console.log(errors)
-    } finally{
-        client.release();
-    }
-
-    res.status(404);
-})
 
 app.listen(3000, console.log("Server Running"));

@@ -21,15 +21,15 @@ tags:
     externalDocs:
       description: Find out more
       url: http://swagger.io
-  - name: product
-    description: About product
-    externalDocs:
-      description: Find out more about our product
-      url: http://swagger.io
   - name: staff
     description: Manage staff
     externalDocs:
       description: Find out more about staff
+      url: http://swagger.io
+  - name: product
+    description: About product
+    externalDocs:
+      description: Find out more about our product
       url: http://swagger.io
   - name: table
     description: Manage tables
@@ -182,6 +182,7 @@ paths:
         - cfwfenstore_auth:
             - write:customers
             - read:customers
+
   /staff/list:
     get:
       tags:
@@ -223,6 +224,61 @@ paths:
                 $ref: '#/components/schemas/Staff'
         '400':
           description: Invalid input
+  /staff/{id}:
+    get:
+      tags:
+        - staff
+      summary: Find staff by ID
+      description: Returns a single customer
+      operationId: getStaffID
+      parameters:
+        - name: staffid
+          in: path
+          description: staffid to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'          
+        '400':
+          description: Invalid PhoneNumber supplied
+        '404':
+          description: Customer not found
+    put:
+      tags:
+        - staff
+      summary: Update an existing staff member
+      operationId: updateStaff
+      requestBody:
+        description: Updated staff data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Staff'
+      responses:
+        '200':
+          description: Staff member updated
+    delete:
+      tags:
+        - staff
+      summary: Delete a staff member
+      operationId: deleteStaff
+      parameters:
+        - name: staffId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Staff member deleted
+
   /product/list:
     get:
       tags:
@@ -264,159 +320,6 @@ paths:
                 $ref: '#/components/schemas/Product'
         '400':
           description: Invalid input
-  /table/list:
-    get:
-      tags:
-        - table
-      summary: Get list of tables
-      description: Retrieve a list of all tables
-      operationId: getTables
-      responses:
-        '200':
-          description: A list of tables
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Table'
-        '500':
-          description: Internal Server Error
-  /table:
-    post:
-      tags:
-        - table
-      summary: Add a new table
-      description: Add a new table to the system
-      operationId: addTable
-      requestBody:
-        description: Table object to add
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Table'
-      responses:
-        '200':
-          description: Table added successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Table'
-        '400':
-          description: Invalid input
-  /material/list:
-    get:
-      tags:
-        - material
-      summary: Get list of raw materials
-      description: Retrieve a list of all raw materials
-      operationId: getMaterials
-      responses:
-        '200':
-          description: A list of raw materials
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Material'
-        '500':
-          description: Internal Server Error
-  /material:
-    post:
-      tags:
-        - material
-      summary: Add a new raw material
-      description: Add a new raw material to the system
-      operationId: addMaterial
-      requestBody:
-        description: Raw material object to add
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Material'
-      responses:
-        '200':
-          description: Material added successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Material'
-        '400':
-          description: Invalid input
-  /order/list:
-    get:
-      tags:
-        - order
-      summary: Get list of orders
-      description: Retrieve a list of all orders
-      operationId: getOrders
-      responses:
-        '200':
-          description: A list of orders
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Order'
-        '500':
-          description: Internal Server Error
-  /order:
-    post:
-      tags:
-        - order
-      summary: Create a new order
-      description: Create a new order in the system
-      operationId: addOrder
-      requestBody:
-        description: Order object to create
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Order'
-      responses:
-        '200':
-          description: Order created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Order'
-        '400':
-          description: Invalid input
-    put:
-      tags:
-        - staff
-      summary: Update an existing staff member
-      operationId: updateStaff
-      requestBody:
-        description: Updated staff data
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Staff'
-      responses:
-        '200':
-          description: Staff member updated
-    delete:
-      tags:
-        - staff
-      summary: Delete a staff member
-      operationId: deleteStaff
-      parameters:
-        - name: staffId
-          in: query
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Staff member deleted
-
   /product/{productId}:
     get:
       tags:
@@ -468,7 +371,72 @@ paths:
         '204':
           description: Product deleted
 
+  /table/list:
+    get:
+      tags:
+        - table
+      summary: Get list of tables
+      description: Retrieve a list of all tables
+      operationId: getTables
+      responses:
+        '200':
+          description: A list of tables
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Table'
+        '500':
+          description: Internal Server Error
+  /table:
+    post:
+      tags:
+        - table
+      summary: Add a new table
+      description: Add a new table to the system
+      operationId: addTable
+      requestBody:
+        description: Table object to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Table'
+      responses:
+        '200':
+          description: Table added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+        '400':
+          description: Invalid input
   /table/{tableId}:
+    get:
+      tags:
+        - table
+      summary: Find table by ID
+      description: Returns a single table
+      operationId: getTableByID
+      parameters:
+        - name: tableId
+          in: path
+          description: ID of the table to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Table not found
     put:
       tags:
         - table
@@ -505,7 +473,73 @@ paths:
         '204':
           description: Table deleted
 
+  /material/list:
+    get:
+      tags:
+        - material
+      summary: Get list of raw materials
+      description: Retrieve a list of all raw materials
+      operationId: getMaterials
+      responses:
+        '200':
+          description: A list of raw materials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Material'
+        '500':
+          description: Internal Server Error
+  /material:
+    post:
+      tags:
+        - material
+      summary: Add a new raw material
+      description: Add a new raw material to the system
+      operationId: addMaterial
+      requestBody:
+        description: Raw material object to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Material'
+      responses:
+        '200':
+          description: Material added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Material'
+        '400':
+          description: Invalid input
+
   /material/{materialId}:
+    get:
+      tags:
+        - material
+      summary: Find material by ID
+      description: Returns a single material
+      operationId: getMaterialByID
+      parameters:
+        - name: materialId
+          in: path
+          description: ID of the material to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Material'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Material not found
     put:
       tags:
         - material
@@ -542,7 +576,74 @@ paths:
         '204':
           description: Material deleted
 
+  /order/list:
+    get:
+      tags:
+        - order
+      summary: Get list of orders
+      description: Retrieve a list of all orders
+      operationId: getOrders
+      responses:
+        '200':
+          description: A list of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '500':
+          description: Internal Server Error
+  /order:
+    post:
+      tags:
+        - order
+      summary: Create a new order
+      description: Create a new order in the system
+      operationId: addOrder
+      requestBody:
+        description: Order object to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid input
+
+
   /order/{orderId}:
+    get:
+      tags:
+        - order
+      summary: Find order by ID
+      description: Returns a single order
+      operationId: getOrderByID
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of the order to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Order not found
     put:
       tags:
         - order
