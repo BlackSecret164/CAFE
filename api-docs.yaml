@@ -843,7 +843,7 @@ paths:
       summary: Get a coupon by ID
       description: Retrieve a single coupon by its ID.
       parameters:
-        - name: id
+        - name: couponid
           in: path
           required: true
           description: ID of the coupon to retrieve

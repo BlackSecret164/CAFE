@@ -258,8 +258,6 @@ app.delete("/customer/:phonecustomer", async (req, res) => {
 });
 
 
-
-
 app.get("/customer/:phonecustomer", async (req, res) => {
     const { phonecustomer } = req.params;
     const client = await pool.connect();
