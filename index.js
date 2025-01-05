@@ -9,7 +9,13 @@ const YAML = require("yaml");
 const file  = fs.readFileSync("./api-docs.yaml", "utf8");
 const swaggerDocument = YAML.parse(file);
 
-app.use(cors());
+const corsOptions = {
+    origin: ['http://localhost:3000', 'https://cafe-k5p5.onrender.com'], // Danh sách các origin được phép
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Phương thức HTTP được phép
+    allowedHeaders: ['Content-Type', 'Authorization'], // Header được phép
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const {PGHOST, PGDATABASE, PGUSER, PGPASSWORD} = process.env;
@@ -25,13 +31,6 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 })
-
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://cafe-k5p5.onrender.com"); // Thay "*" bằng URL của Swagger nếu cần
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    next();
-  });
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
