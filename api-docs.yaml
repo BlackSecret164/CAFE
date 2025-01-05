@@ -1095,6 +1095,9 @@ components:
           format: date
         productids:
           type: array
+          description: List of product IDs in the order
+          items:
+            type: integer
     Promote:
       type: object
       properties:
