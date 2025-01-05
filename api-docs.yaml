@@ -183,7 +183,7 @@ paths:
         - cfwfenstore_auth:
             - write:customers
             - read:customers
-  /staff:
+  /staff/list:
     get:
       tags:
         - staff
@@ -201,6 +201,7 @@ paths:
                   $ref: '#/components/schemas/Staff'
         '500':
           description: Internal Server Error
+  /staff:
     post:
       tags:
         - staff
@@ -223,7 +224,7 @@ paths:
                 $ref: '#/components/schemas/Staff'
         '400':
           description: Invalid input
-  /product:
+  /product/list:
     get:
       tags:
         - product
@@ -241,6 +242,7 @@ paths:
                   $ref: '#/components/schemas/Product'
         '500':
           description: Internal Server Error
+  /product:
     post:
       tags:
         - product
@@ -263,7 +265,7 @@ paths:
                 $ref: '#/components/schemas/Product'
         '400':
           description: Invalid input
-  /table:
+  /table/list:
     get:
       tags:
         - table
@@ -281,6 +283,7 @@ paths:
                   $ref: '#/components/schemas/Table'
         '500':
           description: Internal Server Error
+  /table:
     post:
       tags:
         - table
@@ -303,7 +306,7 @@ paths:
                 $ref: '#/components/schemas/Table'
         '400':
           description: Invalid input
-  /material:
+  /material/list:
     get:
       tags:
         - material
@@ -321,6 +324,7 @@ paths:
                   $ref: '#/components/schemas/Material'
         '500':
           description: Internal Server Error
+  /material:
     post:
       tags:
         - material
@@ -343,7 +347,7 @@ paths:
                 $ref: '#/components/schemas/Material'
         '400':
           description: Invalid input
-  /order:
+  /order/list:
     get:
       tags:
         - order
@@ -361,6 +365,7 @@ paths:
                   $ref: '#/components/schemas/Order'
         '500':
           description: Internal Server Error
+  /order:
     post:
       tags:
         - order
