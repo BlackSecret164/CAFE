@@ -130,7 +130,7 @@ app.get("/order/list", async (req, res) =>{
     const client = await pool.connect();
 
     try {
-        const result = await client.query("SELECT * FROM order_tb");
+        const result = await client.query("SELECT order_tb.orderid, order_tb.phonecustomer, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate, array_agg(order_details.productid) AS productids FROM order_tb JOIN order_details ON order_tb.orderid = order_details.orderid GROUP BY order_tb.orderid, order_tb.phonecustomer, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate");
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)

@@ -1077,19 +1077,24 @@ components:
     Order:
       type: object
       properties:
-        orderID:
+        orderid:
           type: integer
-        phoneCustomer:
+        phonecustomer:
           type: string
-        serviceType:
+        servicetype:
           type: string
-        totalPrice:
+        totalprice:
           type: number
           format: float
-        staffID:
+        staffid:
           type: integer
-        tableID:
+        tableid:
           type: integer
+        orderdate:
+          type: string
+          format: date
+        productids:
+          type: array
     Promote:
       type: object
       properties:
