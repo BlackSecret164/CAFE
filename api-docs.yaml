@@ -1093,10 +1093,10 @@ components:
     Promote:
       type: object
       properties:
-        promoteId:
+        promoteid:
           type: integer
           example: 1
-        promoteName:
+        promotename:
           type: string
           example: "New Year Promotion"
         description:
@@ -1106,14 +1106,14 @@ components:
           type: number
           format: float
           example: 10.5
-        promoteType:
+        promotetype:
           type: string
           example: "Seasonal"
-        startAt:
+        startat:
           type: string
           format: date-time
           example: "2025-01-01T00:00:00Z"
-        endAt:
+        endat:
           type: string
           format: date-time
           example: "2025-01-31T23:59:59Z"
@@ -1121,7 +1121,7 @@ components:
     Coupon:
       type: object
       properties:
-        couponId:
+        couponid:
           type: integer
           example: 1
         code:
@@ -1130,7 +1130,7 @@ components:
         status:
           type: string
           example: "active"
-        promoteId:
+        promoteid:
           type: integer
           example: 1
   requestBodies:
