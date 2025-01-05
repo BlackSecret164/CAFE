@@ -131,7 +131,6 @@ app.get("/order/list", async (req, res) =>{
 
     try {
         const result = await client.query("SELECT * FROM order_tb");
-
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
@@ -183,7 +182,6 @@ app.post("/staff", async (req, res) => {
 app.put("/customer/:phonecustomer", async (req, res) => {
     const { fullname, gender, registrationdate } = req.body; // Xóa phonecustomer khỏi body
     const { phonecustomer } = req.params; // Lấy phonecustomer từ URL params
-    console.log("Phone number:", phonecustomer); 
     const client = await pool.connect();
 
     try {
@@ -196,7 +194,7 @@ app.put("/customer/:phonecustomer", async (req, res) => {
         
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
-            return res.status(404).send({ message: "Customer not found", phonecustomer });
+            return res.status(404).send({ message: "Customer ${phonecustomer} not found" });
         }
 
         res.status(200).send({ message: "Customer edited successfully!" });
