@@ -10,7 +10,7 @@ const file  = fs.readFileSync("./api-docs.yaml", "utf8");
 const swaggerDocument = YAML.parse(file);
 
 const corsOptions = {
-    origin: ['*'], // Danh sách các origin được phép
+    origin: ['http://localhost:3000', 'https://cafe-k5p5.onrender.com'], // Danh sách các origin được phép
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Phương thức HTTP được phép
     allowedHeaders: ['Content-Type', 'Authorization'], // Header được phép
 };
