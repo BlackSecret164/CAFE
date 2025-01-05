@@ -183,6 +183,7 @@ app.post("/staff", async (req, res) => {
 app.put("/customer/:phonecustomer", async (req, res) => {
     const { fullname, gender, registrationdate } = req.body; // Xóa phonecustomer khỏi body
     const { phonecustomer } = req.params; // Lấy phonecustomer từ URL params
+    console.log("Phone number:", phonecustomer); 
     const client = await pool.connect();
 
     try {
