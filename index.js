@@ -196,7 +196,7 @@ app.put("/customer/:phonecustomer", async (req, res) => {
         
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
-            return res.status(404).send({ message: "Customer not found" });
+            return res.status(404).send({ message: "Customer not found", phonecustomer });
         }
 
         res.status(200).send({ message: "Customer edited successfully!" });
