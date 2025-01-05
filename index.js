@@ -283,5 +283,158 @@ app.get("/customer/:phonecustomer", async (req, res) => {
     }
 });
 
+app.get("/promote/list", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM PROMOTE");
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error("Error fetching promotions:", error);
+        res.status(500).send({ message: "Failed to fetch promotions" });
+    }
+});
+
+// Lấy thông tin promotion theo ID
+app.get("/promote/:promoteid", async (req, res) => {
+    const { promoteid } = req.params;
+    try {
+        const result = await pool.query("SELECT * FROM PROMOTE WHERE PROMOTEID = $1", [promoteid]);
+        if (result.rows.length === 0) {
+            return res.status(404).send({ message: `Promotion with ID ${promoteid} not found` });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching promotion:", error);
+        res.status(500).send({ message: "Failed to fetch promotion" });
+    }
+});
+
+// Tạo một promotion mới
+app.post("/promote", async (req, res) => {
+    const { promoteName, description, discount, promoteType, startAt, endAt } = req.body;
+    try {
+        const result = await pool.query(
+            `INSERT INTO PROMOTE (PROMOTENAME, DESCRIPTION, DISCOUNT, PROMOTETYPE, STARTAT, ENDAT) 
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [promoteName, description, discount, promoteType, startAt, endAt]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error creating promotion:", error);
+        res.status(500).send({ message: "Failed to create promotion" });
+    }
+});
+
+// Cập nhật thông tin promotion theo ID
+app.put("/promote/:promoteid", async (req, res) => {
+    const { promoteid } = req.params;
+    const { promotename, description, discount, promotetype, startat, endat } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE PROMOTE 
+             SET PROMOTENAME = $1, DESCRIPTION = $2, DISCOUNT = $3, PROMOTETYPE = $4, STARTAT = $5, ENDAT = $6 
+             WHERE PROMOTEID = $7 RETURNING *`,
+            [promotename, description, discount, promotetype, startat, endat, promoteid]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: `Promotion with ID ${id} not found` });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error updating promotion:", error);
+        res.status(500).send({ message: "Failed to update promotion" });
+    }
+});
+
+// Xóa promotion theo ID
+app.delete("/promote/:promoteid", async (req, res) => {
+    const { promoteid } = req.params;
+    try {
+        const result = await pool.query("DELETE FROM PROMOTE WHERE PROMOTEID = $1", [promoteid]);
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: `Promotion with ID ${promoteid} not found` });
+        }
+        res.status(204).send();
+    } catch (error) {
+        console.error("Error deleting promotion:", error);
+        res.status(500).send({ message: "Failed to delete promotion" });
+    }
+});
+
+// Lấy danh sách tất cả các coupons
+app.get("/promote/coupon/list", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM COUPON");
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error("Error fetching coupons:", error);
+        res.status(500).send({ message: "Failed to fetch coupons" });
+    }
+});
+
+// Lấy thông tin coupon theo ID
+app.get("/promote/coupon/:couponid", async (req, res) => {
+    const { couponid } = req.params;
+    try {
+        const result = await pool.query("SELECT * FROM COUPON WHERE COUPONID = $1", [couponid]);
+        if (result.rows.length === 0) {
+            return res.status(404).send({ message: `Coupon with ID ${couponid} not found` });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching coupon:", error);
+        res.status(500).send({ message: "Failed to fetch coupon" });
+    }
+});
+
+// Tạo một coupon mới
+app.post("/promote/coupon", async (req, res) => {
+    const { code, status, promoteId } = req.body;
+    try {
+        const result = await pool.query(
+            `INSERT INTO COUPON (CODE, STATUS, PROMOTEID) VALUES ($1, $2, $3) RETURNING *`,
+            [code, status, promoteId]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error creating coupon:", error);
+        res.status(500).send({ message: "Failed to create coupon" });
+    }
+});
+
+// Cập nhật thông tin coupon theo ID
+app.put("/promote/coupon/:couponid", async (req, res) => {
+    const { couponid } = req.params;
+    const { code, status, promoteid } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE COUPON 
+             SET CODE = $1, STATUS = $2, PROMOTEID = $3 
+             WHERE COUPONID = $4 RETURNING *`,
+            [code, status, promoteid, couponid]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: `Coupon with ID ${couponid} not found` });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error updating coupon:", error);
+        res.status(500).send({ message: "Failed to update coupon" });
+    }
+});
+
+// Xóa coupon theo ID
+app.delete("/promote/coupon/:couponid", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query("DELETE FROM COUPON WHERE COUPONID = $1", [couponid]);
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: `Coupon with ID ${couponid} not found` });
+        }
+        res.status(204).send();
+    } catch (error) {
+        console.error("Error deleting coupon:", error);
+        res.status(500).send({ message: "Failed to delete coupon" });
+    }
+});
 
 app.listen(3000, console.log("Server Running"));
