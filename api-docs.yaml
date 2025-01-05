@@ -46,6 +46,11 @@ tags:
     externalDocs:
       description: Find out more about order
       url: http://swagger.io
+  - name: promote
+    description: Manage promote
+    externalDocs:
+      description: Find out more about promote
+      url: http://swagger.io
 paths:
   /customer/list:
     get:
@@ -679,6 +684,223 @@ paths:
       responses:
         '204':
           description: Order deleted
+
+  /promote/list:
+    get:
+      tags:
+        - promote
+      summary: Get list of promotes
+      description: Retrieve a list of all promotes
+      operationId: getPromote
+      responses:
+        '200':
+          description: A list of promote
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Promote'
+        '500':
+          description: Internal Server Error
+  /promote:
+    post:
+      tags:
+        - promote
+      summary: Add a new promote to the store
+      description: Add a new promote to the store
+      operationId: addPromote
+      requestBody:
+        description: Create a new promote in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Promote'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Promote'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Promote'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+  /promote/{promoteid}:
+    get:
+      tags:
+        - promote
+      summary: Find promoteid
+      description: Returns a single promote
+      operationId: getPromotebyID
+      parameters:
+        - name: promoteid
+          in: path
+          description: promoteid to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Promote'          
+        '400':
+          description: Invalid PhoneNumber supplied
+        '404':
+          description: Promote not found
+    put:
+      tags:
+        - promote
+      summary: Update an existing promote
+      description: Update an existing promote by promoteid
+      operationId: updatePromote
+      requestBody:
+        description: Update an existent Promote in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Promote'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Promote'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Promote'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Promote not found
+        '422':
+          description: Validation exception
+    delete:
+      tags:
+        - promote
+      summary: Deletes a Promote
+      description: delete a prommote
+      operationId: deletepromote
+      parameters:
+        - name: prommoteid
+          in: path
+          description: Promote to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid Promote value
+  /promote/coupon:
+    post:
+      tags:
+        - promote
+      summary: Create a new coupon
+      description: Add a new coupon to the system.
+      requestBody:
+        description: Coupon object that needs to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Coupon'
+      responses:
+        '201':
+          description: Coupon created successfully
+        '400':
+          description: Invalid input
+
+  /promote/coupon/list:
+    get:
+      tags:
+        - promote
+      summary: Get a list of all coupons
+      description: Retrieve all coupons in the system.
+      responses:
+        '200':
+          description: A list of coupons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Coupon'
+
+  /promote/coupon/{couponid}:
+    get:
+      tags:
+        - promote
+      summary: Get a coupon by ID
+      description: Retrieve a single coupon by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the coupon to retrieve
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Coupon details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coupon'
+        '404':
+          description: Coupon not found
+
+    put:
+      tags:
+        - promote
+      summary: Update a coupon by ID
+      description: Modify an existing coupon by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the coupon to update
+          schema:
+            type: integer
+      requestBody:
+        description: Updated coupon object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Coupon'
+      responses:
+        '200':
+          description: Coupon updated successfully
+        '404':
+          description: Coupon not found
+
+    delete:
+      tags:
+        - promote
+      summary: Delete a coupon by ID
+      description: Remove a coupon from the system by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the coupon to delete
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Coupon deleted successfully
+        '404':
+          description: Coupon not found
 components:
   schemas:
     Customer:
@@ -868,6 +1090,49 @@ components:
           type: integer
         tableID:
           type: integer
+    Promote:
+      type: object
+      properties:
+        promoteId:
+          type: integer
+          example: 1
+        promoteName:
+          type: string
+          example: "New Year Promotion"
+        description:
+          type: string
+          example: "Discount for New Year"
+        discount:
+          type: number
+          format: float
+          example: 10.5
+        promoteType:
+          type: string
+          example: "Seasonal"
+        startAt:
+          type: string
+          format: date-time
+          example: "2025-01-01T00:00:00Z"
+        endAt:
+          type: string
+          format: date-time
+          example: "2025-01-31T23:59:59Z"
+
+    Coupon:
+      type: object
+      properties:
+        couponId:
+          type: integer
+          example: 1
+        code:
+          type: string
+          example: "NEWYEAR2025"
+        status:
+          type: string
+          example: "active"
+        promoteId:
+          type: integer
+          example: 1
   requestBodies:
     Customer:
       description: Customer object that needs to be added to the store
