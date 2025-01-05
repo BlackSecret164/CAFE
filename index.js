@@ -334,7 +334,7 @@ app.put("/promote/:promoteid", async (req, res) => {
             [promotename, description, discount, promotetype, startat, endat, promoteid]
         );
         if (result.rowCount === 0) {
-            return res.status(404).send({ message: `Promotion with ID ${id} not found` });
+            return res.status(404).send({ message: `Promotion with ID ${promoteid} not found` });
         }
         res.status(200).json(result.rows[0]);
     } catch (error) {
@@ -386,11 +386,12 @@ app.get("/promote/coupon/:couponid", async (req, res) => {
 
 // Tạo một coupon mới
 app.post("/promote/coupon", async (req, res) => {
-    const { code, status, promoteId } = req.body;
+    const { code, status, promoteid } = req.body;
     try {
+    
         const result = await pool.query(
             `INSERT INTO COUPON (CODE, STATUS, PROMOTEID) VALUES ($1, $2, $3) RETURNING *`,
-            [code, status, promoteId]
+            [code, status, promoteid]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -422,7 +423,7 @@ app.put("/promote/coupon/:couponid", async (req, res) => {
 
 // Xóa coupon theo ID
 app.delete("/promote/coupon/:couponid", async (req, res) => {
-    const { id } = req.params;
+    const { couponid } = req.params;
     try {
         const result = await pool.query("DELETE FROM COUPON WHERE COUPONID = $1", [couponid]);
         if (result.rowCount === 0) {
