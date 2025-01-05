@@ -51,7 +51,7 @@ app.get("/staff", async (req, res) =>{
     res.status(404);
 })
 
-app.get("/customer", async (req, res) =>{
+app.get("/customer/list", async (req, res) =>{
     const client = await pool.connect();
 
     try {
@@ -86,7 +86,7 @@ app.post("/customer", async (req, res) => {
     }
 });
 
-app.put("/customer", async (req, res) => {
+app.put("/customer/:phonecustomer", async (req, res) => {
     const { fullname, phonecustomer, gender, registrationdate } = req.body;
     const client = await pool.connect();
 
@@ -105,6 +105,83 @@ app.put("/customer", async (req, res) => {
         client.release();
     }
 });
+
+app.delete("/customer/:phonecustomer", async (req, res) => {
+    const { phonecustomer } = req.params; // Lấy phonecustomer từ params
+    const client = await pool.connect();
+
+    try {
+        // Ghi log để kiểm tra giá trị nhận được
+        console.log("Phonecustomer to delete:", phonecustomer);
+
+        // Xóa dữ liệu trong invoice
+        const query3 = `
+            DELETE FROM invoice
+            WHERE orderid IN (SELECT orderid FROM order_tb WHERE phonecustomer = $1)
+        `;
+        await client.query(query3, [phonecustomer]);
+
+        // Xóa dữ liệu trong order_details
+        const query2 = `
+            DELETE FROM order_details
+            WHERE orderid IN (SELECT orderid FROM order_tb WHERE phonecustomer = $1)
+        `;
+        await client.query(query2, [phonecustomer]);
+
+        // Xóa dữ liệu trong order_tb
+        const query1 = `
+            DELETE FROM order_tb
+            WHERE phonecustomer = $1
+        `;
+        await client.query(query1, [phonecustomer]);
+
+        // Xóa dữ liệu trong customer
+        const query = `
+            DELETE FROM customer
+            WHERE phonecustomer = $1
+        `;
+        const result = await client.query(query, [phonecustomer]);
+
+        if (result.rowCount === 0) {
+            // Nếu không tìm thấy bản ghi để xóa
+            return res.status(404).send({ message: "Customer not found" });
+        }
+
+        res.status(204).send({ message: "Customer deleted" }); // Xóa thành công,
+    } catch (error) {
+        console.error("Error deleting customer:", error);
+        res.status(500).send({ message: "Failed to delete customer" });
+    } finally {
+        client.release();
+    }
+});
+
+
+
+
+app.get("/customer/:phonecustomer", async (req, res) => {
+    const { phonecustomer } = req.params;
+    const client = await pool.connect();
+
+    try {
+        const query = "SELECT * FROM customer WHERE phonecustomer = $1";
+        const result = await client.query(query, [phonecustomer]);
+
+        if (result.rowCount === 0) {
+            // Không tìm thấy khách hàng
+            return res.status(404).json({ message: "Customer not found" });
+        }
+
+        // Trả về thông tin khách hàng
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching customer:", error);
+        res.status(500).json({ message: "Failed to fetch customer" });
+    } finally {
+        client.release();
+    }
+});
+
 
 app.get("/material", async (req, res) =>{
     const client = await pool.connect();
