@@ -130,7 +130,7 @@ app.get("/order/list", async (req, res) =>{
     const client = await pool.connect();
 
     try {
-        const result = await client.query('SELECT order_tb.orderid AS "orderID", customer.customerid AS "customerID", order_tb.servicetype AS "serviceType", order_tb.totalprice AS "totalPrice", order_tb.staffid AS "staffID", order_tb.tableid AS "tableID", order_tb.orderdate AS "orderDate", array_agg(order_details.productid) AS "productIDs" FROM order_tb JOIN customer ON order_tb.phonecustomer = customer.phone JOIN order_details ON order_tb.orderid = order_details.orderid GROUP BY order_tb.orderid, customer.customerid, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate');
+        const result = await client.query('SELECT order_tb.orderid AS "orderID", customer.customerid AS "customerID", order_tb.servicetype AS "serviceType", order_tb.totalprice AS "totalPrice", order_tb.staffid AS "staffID", order_tb.tableid AS "tableID", order_tb.orderdate AS "orderDate", array_agg(order_details.productid) AS "productIDs" FROM order_tb JOIN customer ON order_tb.phonecustomer = customer.phonecustomer JOIN order_details ON order_tb.orderid = order_details.orderid GROUP BY order_tb.orderid, customer.customerid, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate');
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
@@ -456,7 +456,7 @@ app.get("/order/:orderID", async (req, res) => {
             JOIN 
                 customer 
             ON 
-                order_tb.phonecustomer = customer.phone
+                order_tb.phonecustomer = customer.phonecustomer
             JOIN 
                 order_details 
             ON 
