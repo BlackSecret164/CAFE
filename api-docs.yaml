@@ -624,7 +624,7 @@ paths:
           description: Invalid input
 
 
-  /order/{orderId}:
+  /order/{orderID}:
     get:
       tags:
         - order
@@ -632,7 +632,7 @@ paths:
       description: Returns a single order
       operationId: getOrderByID
       parameters:
-        - name: orderId
+        - name: orderID
           in: path
           description: ID of the order to return
           required: true
