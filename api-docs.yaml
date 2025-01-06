@@ -906,6 +906,10 @@ components:
     Customer:
       type: object
       properties:
+        customerID:
+          type: integer
+          format: int64
+          example: 10
         phonecustomer:
           type: string
           maxLength: 15
@@ -1077,23 +1081,23 @@ components:
     Order:
       type: object
       properties:
-        orderid:
+        orderID:
           type: integer
-        phonecustomer:
+        customerID:
           type: string
-        servicetype:
+        serviceType:
           type: string
-        totalprice:
+        totalPrice:
           type: number
           format: float
-        staffid:
+        staffID:
           type: integer
-        tableid:
+        tableID:
           type: integer
-        orderdate:
+        orderDate:
           type: string
           format: date
-        productids:
+        productIDs:
           type: array
           description: List of product IDs in the order
           items:

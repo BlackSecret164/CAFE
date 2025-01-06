@@ -130,7 +130,7 @@ app.get("/order/list", async (req, res) =>{
     const client = await pool.connect();
 
     try {
-        const result = await client.query("SELECT order_tb.orderid, order_tb.phonecustomer, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate, array_agg(order_details.productid) AS productids FROM order_tb JOIN order_details ON order_tb.orderid = order_details.orderid GROUP BY order_tb.orderid, order_tb.phonecustomer, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate");
+        const result = await client.query("SELECT order_tb.orderid, customer.customerid, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate, array_agg(order_details.productid) AS productids FROM order_tb JOIN customer ON order_tb.phonecustomer = customer.phonecustomer JOIN order_details ON order_tb.orderid = order_details.orderid GROUP BY order_tb.orderid, customer.customerid, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate");
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
@@ -433,6 +433,29 @@ app.delete("/promote/coupon/:couponid", async (req, res) => {
     } catch (error) {
         console.error("Error deleting coupon:", error);
         res.status(500).send({ message: "Failed to delete coupon" });
+    }
+});
+
+app.get("/order/:orderID", async (req, res) => {
+    const { orderID } = req.params;
+    const client = await pool.connect();
+
+    try {
+        const query = "SELECT order_tb.orderid, customer.customerid, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate, array_agg(order_details.productid) AS productids FROM order_tb JOIN customer ON order_tb.phonecustomer = customer.phone JOIN order_details ON order_tb.orderid = order_details.orderid where order_tb.orderid =$1 GROUP BY order_tb.orderid, customer.customerid, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate";
+        const result = await client.query(query, [orderID]);
+
+        if (result.rowCount === 0) {
+            // Không tìm thấy khách hàng
+            return res.status(404).json({ message: "Customer not found" });
+        }
+
+        // Trả về thông tin khách hàng
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching customer:", error);
+        res.status(500).json({ message: "Failed to fetch customer" });
+    } finally {
+        client.release();
     }
 });
 
