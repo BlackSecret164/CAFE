@@ -130,7 +130,7 @@ app.get("/order/list", async (req, res) =>{
     const client = await pool.connect();
 
     try {
-        const result = await client.query('SELECT order_tb.orderid AS "orderID", customer.customerid AS "customerID", order_tb.servicetype AS "serviceType", order_tb.totalprice AS "totalPrice", order_tb.staffid AS "staffID", order_tb.tableid AS "tableID", order_tb.orderdate AS "orderDate", array_agg(order_details.productid) AS "productIDs" FROM order_tb JOIN customer ON order_tb.phonecustomer = customer.phonecustomer JOIN order_details ON order_tb.orderid = order_details.orderid GROUP BY order_tb.orderid, customer.customerid, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate');
+        const result = await client.query('SELECT order_tb.id AS "is", customer.id AS "customerID", order_tb.servicetype AS "serviceType", order_tb.totalprice AS "totalPrice", order_tb.staffid AS "staffID", order_tb.tableid AS "tableID", order_tb.orderdate AS "orderDate", array_agg(order_details.productid) AS "productIDs" FROM order_tb JOIN customer ON order_tb.phonecustomer = customer.phone JOIN order_details ON order_tb.id = order_details.orderid GROUP BY order_tb.id, customer.id, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate');
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
@@ -142,15 +142,15 @@ app.get("/order/list", async (req, res) =>{
 })
 
 app.post("/customer", async (req, res) => {
-    const { fullname, phonecustomer, gender, registrationdate } = req.body;
+    const { name, phone, gender, registrationdate } = req.body;
     const client = await pool.connect();
 
     try {
         const query = `
-            INSERT INTO customer (fullname, phonecustomer, gender, registrationdate)
+            INSERT INTO customer (name, phone, gender, registrationdate)
             VALUES ($1, $2, $3, $4)
         `;
-        await client.query(query, [ fullname, phonecustomer, gender, registrationdate]);
+        await client.query(query, [ name, phone, gender, registrationdate]);
         res.status(201).send({ message: "Customer added successfully!" });
     } catch (error) {
         console.error("Error adding customer:", error);
@@ -161,15 +161,15 @@ app.post("/customer", async (req, res) => {
 });
 
 app.post("/staff", async (req, res) => {
-    const { fullname, phonestaff, birth, address, gender, typestaff, startdate } = req.body;
+    const { name, phone, birth, address, gender, typestaff, startdate } = req.body;
     const client = await pool.connect();
 
     try {
         const query = `
-            INSERT INTO staff (fullname, phonestaff, birth, address, gender, typestaff, startdate)
+            INSERT INTO staff (name, phone, birth, address, gender, typestaff, startdate)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
-        await client.query(query, [ fullname, phonestaff, birth, address, gender, typestaff, startdate]);
+        await client.query(query, [ name, phone, birth, address, gender, typestaff, startdate]);
         res.status(201).send({ message: "Staff added successfully!" });
     } catch (error) {
         console.error("Error adding staff:", error);
@@ -179,22 +179,22 @@ app.post("/staff", async (req, res) => {
     }
 });
 
-app.put("/customer/:phonecustomer", async (req, res) => {
-    const { fullname, gender, registrationdate } = req.body; // Xóa phonecustomer khỏi body
-    const { phonecustomer } = req.params; // Lấy phonecustomer từ URL params
+app.put("/customer/:phone", async (req, res) => {
+    const { name, gender, registrationdate } = req.body; // Xóa phonecustomer khỏi body
+    const { phone } = req.params; // Lấy phonecustomer từ URL params
     const client = await pool.connect();
 
     try {
         const query = `
             UPDATE customer
-            SET fullname = $1, gender = $2, registrationdate = $3
-            WHERE phonecustomer = $4
+            SET name = $1, gender = $2, registrationdate = $3
+            WHERE phone = $4
         `;
-        const result = await client.query(query, [fullname, gender, registrationdate, phonecustomer]);
+        const result = await client.query(query, [name, gender, registrationdate, phone]);
         
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
-            return res.status(404).send({ message: "Customer ${phonecustomer} not found" });
+            return res.status(404).send({ message: "Customer ${phone} not found" });
         }
 
         res.status(200).send({ message: "Customer edited successfully!" });
@@ -207,41 +207,41 @@ app.put("/customer/:phonecustomer", async (req, res) => {
 });
 
 
-app.delete("/customer/:phonecustomer", async (req, res) => {
-    const { phonecustomer } = req.params; // Lấy phonecustomer từ params
+app.delete("/customer/:phone", async (req, res) => {
+    const { phone } = req.params; // Lấy phonecustomer từ params
     const client = await pool.connect();
 
     try {
         // Ghi log để kiểm tra giá trị nhận được
-        console.log("Phonecustomer to delete:", phonecustomer);
+        console.log("Phonecustomer to delete:", phone);
 
         // Xóa dữ liệu trong invoice
         const query3 = `
             DELETE FROM invoice
-            WHERE orderid IN (SELECT orderid FROM order_tb WHERE phonecustomer = $1)
+            WHERE id IN (SELECT id FROM order_tb WHERE phone = $1)
         `;
-        await client.query(query3, [phonecustomer]);
+        await client.query(query3, [phone]);
 
         // Xóa dữ liệu trong order_details
         const query2 = `
             DELETE FROM order_details
-            WHERE orderid IN (SELECT orderid FROM order_tb WHERE phonecustomer = $1)
+            WHERE orderid IN (SELECT id FROM order_tb WHERE phone = $1)
         `;
-        await client.query(query2, [phonecustomer]);
+        await client.query(query2, [phone]);
 
         // Xóa dữ liệu trong order_tb
         const query1 = `
             DELETE FROM order_tb
-            WHERE phonecustomer = $1
+            WHERE phone = $1
         `;
-        await client.query(query1, [phonecustomer]);
+        await client.query(query1, [phone]);
 
         // Xóa dữ liệu trong customer
         const query = `
             DELETE FROM customer
             WHERE phonecustomer = $1
         `;
-        const result = await client.query(query, [phonecustomer]);
+        const result = await client.query(query, [phone]);
 
         if (result.rowCount === 0) {
             // Nếu không tìm thấy bản ghi để xóa
@@ -258,13 +258,13 @@ app.delete("/customer/:phonecustomer", async (req, res) => {
 });
 
 
-app.get("/customer/:phonecustomer", async (req, res) => {
-    const { phonecustomer } = req.params;
+app.get("/customer/:phone", async (req, res) => {
+    const { phone } = req.params;
     const client = await pool.connect();
 
     try {
-        const query = "SELECT * FROM customer WHERE phonecustomer = $1";
-        const result = await client.query(query, [phonecustomer]);
+        const query = "SELECT * FROM customer WHERE phone = $1";
+        const result = await client.query(query, [phone]);
 
         if (result.rowCount === 0) {
             // Không tìm thấy khách hàng
@@ -292,12 +292,12 @@ app.get("/promote/list", async (req, res) => {
 });
 
 // Lấy thông tin promotion theo ID
-app.get("/promote/:promoteid", async (req, res) => {
-    const { promoteid } = req.params;
+app.get("/promote/:id", async (req, res) => {
+    const { id } = req.params;
     try {
-        const result = await pool.query("SELECT * FROM PROMOTE WHERE PROMOTEID = $1", [promoteid]);
+        const result = await pool.query("SELECT * FROM PROMOTE WHERE ID = $1", [id]);
         if (result.rows.length === 0) {
-            return res.status(404).send({ message: `Promotion with ID ${promoteid} not found` });
+            return res.status(404).send({ message: `Promotion with ID ${id} not found` });
         }
         res.status(200).json(result.rows[0]);
     } catch (error) {
@@ -308,12 +308,12 @@ app.get("/promote/:promoteid", async (req, res) => {
 
 // Tạo một promotion mới
 app.post("/promote", async (req, res) => {
-    const { promotename, description, discount, promotetype, startat, endat } = req.body;
+    const { name, description, discount, promoteType, startAt, endAt } = req.body;
     try {
         const result = await pool.query(
-            `INSERT INTO PROMOTE (PROMOTENAME, DESCRIPTION, DISCOUNT, PROMOTETYPE, STARTAT, ENDAT) 
+            `INSERT INTO PROMOTE (NAME, DESCRIPTION, DISCOUNT, PROMOTETYPE, STARTAT, ENDAT) 
              VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [promotename, description, discount, promotetype, startat, endat]
+            [name, description, discount, promoteType, startAt, endAt]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -323,19 +323,19 @@ app.post("/promote", async (req, res) => {
 });
 
 // Cập nhật thông tin promotion theo ID
-app.put("/promote/:promoteid", async (req, res) => {
+app.put("/promote/:id", async (req, res) => {
     //const { promoteid } = req.params;
     //const promoteidInt = parseInt(promoteid, 10);
-    const { promoteid, promotename, description, discount, promotetype, startat, endat } = req.body;
+    const { id, name, description, discount, promoteType, startAt, endAt } = req.body;
     try {
         const result = await pool.query(
             `UPDATE PROMOTE 
-             SET PROMOTENAME = $1, DESCRIPTION = $2, DISCOUNT = $3, PROMOTETYPE = $4, STARTAT = $5, ENDAT = $6 
-             WHERE PROMOTEID = $7 RETURNING *`,
-            [promotename, description, discount, promotetype, startat, endat, promoteid]
+             SET NAME = $1, DESCRIPTION = $2, DISCOUNT = $3, PROMOTETYPE = $4, STARTAT = $5, ENDAT = $6 
+             WHERE ID = $7 RETURNING *`,
+            [name, description, discount, promoteType, startAt, endAt, id]
         );
         if (result.rowCount === 0) {
-            return res.status(404).send({ message: `Promotion with ID ${promoteid} not found` });
+            return res.status(404).send({ message: `Promotion with ID ${id} not found` });
         }
         res.status(200).json(result.rows[0]);
     } catch (error) {
@@ -345,12 +345,12 @@ app.put("/promote/:promoteid", async (req, res) => {
 });
 
 // Xóa promotion theo ID
-app.delete("/promote/:promoteid", async (req, res) => {
-    const { promoteid } = req.params;
+app.delete("/promote/:id", async (req, res) => {
+    const { id } = req.params;
     try {
-        const result = await pool.query("DELETE FROM PROMOTE WHERE PROMOTEID = $1", [promoteid]);
+        const result = await pool.query("DELETE FROM PROMOTE WHERE ID = $1", [id]);
         if (result.rowCount === 0) {
-            return res.status(404).send({ message: `Promotion with ID ${promoteid} not found` });
+            return res.status(404).send({ message: `Promotion with ID ${id} not found` });
         }
         res.status(204).send();
     } catch (error) {
@@ -362,7 +362,7 @@ app.delete("/promote/:promoteid", async (req, res) => {
 // Lấy danh sách tất cả các coupons
 app.get("/promote/coupon/list", async (req, res) => {
     try {
-        const result = await pool.query("SELECT coupon.couponid,coupon.code, coupon.status, promote.promotename FROM COUPON JOIN PROMOTE ON coupon.couponid=promote.promoteid");
+        const result = await pool.query("SELECT coupon.id,coupon.code, coupon.status, promote.name FROM COUPON JOIN PROMOTE ON coupon.promoteid=promote.id");
         res.status(200).json(result.rows);
     } catch (error) {
         console.error("Error fetching coupons:", error);
@@ -371,12 +371,12 @@ app.get("/promote/coupon/list", async (req, res) => {
 });
 
 // Lấy thông tin coupon theo ID
-app.get("/promote/coupon/:couponid", async (req, res) => {
-    const { couponid } = req.params;
+app.get("/promote/coupon/:id", async (req, res) => {
+    const { id } = req.params;
     try {
-        const result = await pool.query("SELECT * FROM COUPON WHERE COUPONID = $1", [couponid]);
+        const result = await pool.query("SELECT * FROM COUPON WHERE ID = $1", [id]);
         if (result.rows.length === 0) {
-            return res.status(404).send({ message: `Coupon with ID ${couponid} not found` });
+            return res.status(404).send({ message: `Coupon with ID ${id} not found` });
         }
         res.status(200).json(result.rows[0]);
     } catch (error) {
@@ -387,12 +387,12 @@ app.get("/promote/coupon/:couponid", async (req, res) => {
 
 // Tạo một coupon mới
 app.post("/promote/coupon", async (req, res) => {
-    const { code, status, promoteid } = req.body;
+    const { code, status, promoteId } = req.body;
     try {
     
         const result = await pool.query(
             `INSERT INTO COUPON (CODE, STATUS, PROMOTEID) VALUES ($1, $2, $3) RETURNING *`,
-            [code, status, promoteid]
+            [code, status, promoteId]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -402,18 +402,18 @@ app.post("/promote/coupon", async (req, res) => {
 });
 
 // Cập nhật thông tin coupon theo ID
-app.put("/promote/coupon/:couponid", async (req, res) => {
-    const { couponid } = req.params;
-    const { code, status, promoteid } = req.body;
+app.put("/promote/coupon/:id", async (req, res) => {
+    const { id } = req.params;
+    const { code, status, promoteId } = req.body;
     try {
         const result = await pool.query(
             `UPDATE COUPON 
              SET CODE = $1, STATUS = $2, PROMOTEID = $3 
-             WHERE COUPONID = $4 RETURNING *`,
-            [code, status, promoteid, couponid]
+             WHERE ID = $4 RETURNING *`,
+            [code, status, promoteId, id]
         );
         if (result.rowCount === 0) {
-            return res.status(404).send({ message: `Coupon with ID ${couponid} not found` });
+            return res.status(404).send({ message: `Coupon with ID ${id} not found` });
         }
         res.status(200).json(result.rows[0]);
     } catch (error) {
@@ -423,12 +423,12 @@ app.put("/promote/coupon/:couponid", async (req, res) => {
 });
 
 // Xóa coupon theo ID
-app.delete("/promote/coupon/:couponid", async (req, res) => {
-    const { couponid } = req.params;
+app.delete("/promote/coupon/:id", async (req, res) => {
+    const { id } = req.params;
     try {
-        const result = await pool.query("DELETE FROM COUPON WHERE COUPONID = $1", [couponid]);
+        const result = await pool.query("DELETE FROM COUPON WHERE ID = $1", [id]);
         if (result.rowCount === 0) {
-            return res.status(404).send({ message: `Coupon with ID ${couponid} not found` });
+            return res.status(404).send({ message: `Coupon with ID ${id} not found` });
         }
         res.status(204).send();
     } catch (error) {
@@ -437,14 +437,14 @@ app.delete("/promote/coupon/:couponid", async (req, res) => {
     }
 });
 
-app.get("/order/:orderID", async (req, res) => {
-    const { orderID } = req.params;
+app.get("/order/:id", async (req, res) => {
+    const { id } = req.params;
     const client = await pool.connect();
 
     try {
         const query = `
             SELECT 
-                order_tb.orderid AS "orderID", 
+                order_tb.id AS "id", 
                 customer.customerid AS "customerID", 
                 order_tb.servicetype AS "serviceType", 
                 order_tb.totalprice AS "totalPrice", 
@@ -457,15 +457,15 @@ app.get("/order/:orderID", async (req, res) => {
             JOIN 
                 customer 
             ON 
-                order_tb.phonecustomer = customer.phonecustomer
+                order_tb.phonecustomer = customer.phone
             JOIN 
                 order_details 
             ON 
-                order_tb.orderid = order_details.orderid
+                order_tb.id = order_details.orderid
             WHERE 
-                order_tb.orderid = $1
+                order_tb.id = $1
             GROUP BY 
-                order_tb.orderid, 
+                order_tb.id, 
                 customer.customerid, 
                 order_tb.servicetype, 
                 order_tb.totalprice, 
@@ -473,7 +473,7 @@ app.get("/order/:orderID", async (req, res) => {
                 order_tb.tableid, 
                 order_tb.orderdate;
         `;
-        const result = await client.query(query, [orderID]);
+        const result = await client.query(query, [id]);
 
         if (result.rowCount === 0) {
             return res.status(404).json({ message: "Order not found" });
