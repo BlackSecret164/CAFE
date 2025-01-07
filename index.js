@@ -308,12 +308,12 @@ app.get("/promote/:promoteid", async (req, res) => {
 
 // Tạo một promotion mới
 app.post("/promote", async (req, res) => {
-    const { promoteName, description, discount, promoteType, startAt, endAt } = req.body;
+    const { promotename, description, discount, promotetype, startat, endat } = req.body;
     try {
         const result = await pool.query(
             `INSERT INTO PROMOTE (PROMOTENAME, DESCRIPTION, DISCOUNT, PROMOTETYPE, STARTAT, ENDAT) 
              VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [promoteName, description, discount, promoteType, startAt, endAt]
+            [promotename, description, discount, promotetype, startat, endat]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
