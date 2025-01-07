@@ -161,7 +161,7 @@ app.post("/customer", async (req, res) => {
 });
 
 app.post("/staff", async (req, res) => {
-    const { name, phone, birth, address, gender, typestaff, startdate } = req.body;
+    const { name, phone, birth, address, gender, typeStaff, startDate } = req.body;
     const client = await pool.connect();
 
     try {
@@ -169,7 +169,7 @@ app.post("/staff", async (req, res) => {
             INSERT INTO staff (name, phone, birth, address, gender, typestaff, startdate)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
-        await client.query(query, [ name, phone, birth, address, gender, typestaff, startdate]);
+        await client.query(query, [ name, phone, birth, address, gender, typeStaff, startDate]);
         res.status(201).send({ message: "Staff added successfully!" });
     } catch (error) {
         console.error("Error adding staff:", error);
