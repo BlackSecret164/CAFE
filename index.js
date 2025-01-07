@@ -361,7 +361,7 @@ app.delete("/promote/:promoteid", async (req, res) => {
 // Lấy danh sách tất cả các coupons
 app.get("/promote/coupon/list", async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM COUPON");
+        const result = await pool.query("SELECT coupon.couponid,coupon.code, coupon.status promote.promotename FROM COUPON JOIN PROMOTE ON coupon.couponid=promote.promoteid");
         res.status(200).json(result.rows);
     } catch (error) {
         console.error("Error fetching coupons:", error);
