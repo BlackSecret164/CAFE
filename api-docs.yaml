@@ -1002,11 +1002,9 @@ components:
         workShiftID:
           type: integer
         workHours:
-          type: number
-          format: float
+          type: integer
         salary:
-          type: number
-          format: float
+          type: integer
         typeStaff:
           type: string
         startDate:
