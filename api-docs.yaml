@@ -417,7 +417,7 @@ paths:
                 $ref: '#/components/schemas/Table'
         '400':
           description: Invalid input
-  /table/{tableId}:
+  /table/{id}:
     get:
       tags:
         - table
@@ -920,10 +920,13 @@ components:
         gender:
           type: string
           example: "Female"
-        registrationdate:
+        registrationDate:
           type: string
           format: date-time
           example: "2023-12-30T12:00:00Z"
+        rank:
+          type: string
+          example: "Đồng"
       xml:
         name: customer
     User:

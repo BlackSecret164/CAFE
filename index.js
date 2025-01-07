@@ -142,7 +142,7 @@ app.get("/order/list", async (req, res) =>{
 })
 
 app.post("/customer", async (req, res) => {
-    const { name, phone, gender, registrationdate } = req.body;
+    const { name, phone, gender, registrationDate } = req.body;
     const client = await pool.connect();
 
     try {
@@ -150,7 +150,7 @@ app.post("/customer", async (req, res) => {
             INSERT INTO customer (name, phone, gender, registrationdate)
             VALUES ($1, $2, $3, $4)
         `;
-        await client.query(query, [ name, phone, gender, registrationdate]);
+        await client.query(query, [ name, phone, gender, registrationDate]);
         res.status(201).send({ message: "Customer added successfully!" });
     } catch (error) {
         console.error("Error adding customer:", error);
@@ -180,17 +180,17 @@ app.post("/staff", async (req, res) => {
 });
 
 app.put("/customer/:phone", async (req, res) => {
-    const { name, gender, registrationdate } = req.body; // Xóa phonecustomer khỏi body
+    const { name, gender, registrationDate, rank } = req.body; // Xóa phonecustomer khỏi body
     const { phone } = req.params; // Lấy phonecustomer từ URL params
     const client = await pool.connect();
 
     try {
         const query = `
             UPDATE customer
-            SET name = $1, gender = $2, registrationdate = $3
-            WHERE phone = $4
+            SET name = $1, gender = $2, registrationdate = $3, rank = $4
+            WHERE phone = $5
         `;
-        const result = await client.query(query, [name, gender, registrationdate, phone]);
+        const result = await client.query(query, [name, gender, registrationDate, rank, phone]);
         
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
