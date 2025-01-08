@@ -16,6 +16,9 @@ externalDocs:
 servers:
   - url: https://cafe-k5p5.onrender.com
 tags:
+  - name: default
+    externalDocs:
+      url: http://swagger.io
   - name: customer
     description: Everything about your customer
     externalDocs:
@@ -52,6 +55,36 @@ tags:
       description: Find out more about promote
       url: http://swagger.io
 paths:
+  /file/upload:
+    post:
+      tags:
+        - default
+      summary: Upload an image
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imageURL:
+                    type: string
+                    example: "https://your-storage-service.com/uploads/product-image.jpg"
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
   /customer/list:
     get:
       tags:
