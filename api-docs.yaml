@@ -211,9 +211,9 @@ paths:
       description: delete a customer
       operationId: deleteCustomer
       parameters:
-        - name: phone
+        - name: id
           in: path
-          description: Customer phonecustomer to delete
+          description: Customerid to delete
           required: true
           schema:
             type: string
