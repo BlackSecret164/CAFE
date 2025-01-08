@@ -222,18 +222,18 @@ app.post("/staff", async (req, res) => {
     }
 });
 
-app.put("/customer/:phone", async (req, res) => {
+app.put("/customer/:id", async (req, res) => {
     const { name, gender, registrationDate, rank } = req.body; // Xóa phonecustomer khỏi body
-    const { phone } = req.params; // Lấy phonecustomer từ URL params
+    const { id } = req.params; // Lấy phonecustomer từ URL params
     const client = await pool.connect();
 
     try {
         const query = `
             UPDATE customer
             SET name = $1, gender = $2, registrationdate = $3, rank = $4
-            WHERE phone = $5
+            WHERE id = $5
         `;
-        const result = await client.query(query, [name, gender, registrationDate, rank, phone]);
+        const result = await client.query(query, [name, gender, registrationDate, rank, id]);
         
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
@@ -250,41 +250,20 @@ app.put("/customer/:phone", async (req, res) => {
 });
 
 
-app.delete("/customer/:phone", async (req, res) => {
-    const { phone } = req.params; // Lấy phonecustomer từ params
+app.delete("/customer/:id", async (req, res) => {
+    const { id } = req.params; // Lấy phonecustomer từ params
     const client = await pool.connect();
 
     try {
         // Ghi log để kiểm tra giá trị nhận được
-        console.log("Phonecustomer to delete:", phone);
-
-        // Xóa dữ liệu trong invoice
-        const query3 = `
-            DELETE FROM invoice
-            WHERE id IN (SELECT id FROM order_tb WHERE phone = $1)
-        `;
-        await client.query(query3, [phone]);
-
-        // Xóa dữ liệu trong order_details
-        const query2 = `
-            DELETE FROM order_details
-            WHERE orderid IN (SELECT id FROM order_tb WHERE phone = $1)
-        `;
-        await client.query(query2, [phone]);
-
-        // Xóa dữ liệu trong order_tb
-        const query1 = `
-            DELETE FROM order_tb
-            WHERE phone = $1
-        `;
-        await client.query(query1, [phone]);
+        console.log("CustomerID to delete:", id);
 
         // Xóa dữ liệu trong customer
         const query = `
             DELETE FROM customer
-            WHERE phonecustomer = $1
+            WHERE id = $1
         `;
-        const result = await client.query(query, [phone]);
+        const result = await client.query(query, [id]);
 
         if (result.rowCount === 0) {
             // Nếu không tìm thấy bản ghi để xóa

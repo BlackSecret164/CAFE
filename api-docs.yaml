@@ -170,6 +170,7 @@ paths:
         - cfwfenstore_auth:
             - write:customers
             - read:customers
+  /customer/{id}:
     put:
       tags:
         - customer
