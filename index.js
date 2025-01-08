@@ -1,6 +1,5 @@
 const express = require("express");
 const multer = require('multer');
-const axios = require('axios');
 const app = express();
 const dotenv = require("dotenv").config();
 const cors = require("cors");
