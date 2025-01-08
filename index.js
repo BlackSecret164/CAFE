@@ -52,58 +52,42 @@ const storage = multer.memoryStorage(); // Lưu file trong bộ nhớ tạm
 const upload = multer({ storage });
 const axios = require("axios");
 const FormData = require("form-data");
-async function uploadImageToCloudinary(filePath) {
-    const formData = new FormData();
-    formData.append("file", filePath); // Đường dẫn hoặc buffer ảnh
-    formData.append("upload_preset", "unsigned_products");
-  
-    try {
-      const response = await axios.post("https://api.cloudinary.com/v1_1/dkntmdcja/image/upload", formData, {
-        headers: formData.getHeaders(),
-      });
-  
-      console.log("Uploaded image URL:", response.data.secure_url);
-      return response.data.secure_url;
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      throw error;
-    }
-  }
 
-// API Endpoint để upload file
+// API Endpoint để tải lên tệp
 app.post("/file/upload", upload.single("file"), async (req, res) => {
-    try {
-      const file = req.file; // File được upload từ client
-      if (!file) {
-        return res.status(400).json({ message: "No file uploaded" });
-      }
-  
-      // Upload file lên Cloudinary
-      const formData = new FormData();
-      formData.append("file", file.buffer, file.originalname);
-      formData.append("upload_preset", "unsigned_products"); // Tên upload preset
-      formData.append("folder", "products"); // Thư mục lưu trữ trong Cloudinary
-  
-      const cloudinaryResponse = await axios.post(
-        "https://api.cloudinary.com/v1_1/dkntmdcja/image/upload",
-        formData,
-        {
-          headers: {
-            ...formData.getHeaders(),
-          },
-        }
-      );
-  
-      // Trả về URL hình ảnh
-      res.status(201).json({
-        message: "File uploaded successfully",
-        imageUrl: cloudinaryResponse.data.secure_url,
-      });
-    } catch (error) {
-      console.error("Error uploading file:", error.message);
-      res.status(500).json({ message: "Failed to upload file", error: error.message });
+  try {
+    const file = req.file; // Lấy file từ request
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
     }
-  });
+
+    // Tạo FormData để gửi lên Cloudinary
+    const formData = new FormData();
+    formData.append("file", file.buffer, file.originalname);
+    formData.append("upload_preset", "unsigned_products");
+    formData.append("folder", "products");
+
+    // Gửi yêu cầu POST đến Cloudinary
+    const cloudinaryResponse = await axios.post(
+      "https://api.cloudinary.com/v1_1/dkntmdcja/image/upload",
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+        },
+      }
+    );
+
+    // Trả về URL của ảnh đã upload
+    res.status(201).json({
+      message: "File uploaded successfully",
+      imageUrl: cloudinaryResponse.data.secure_url,
+    });
+  } catch (error) {
+    console.error("Error uploading file:", error.message);
+    res.status(500).json({ message: "Failed to upload file", error: error.message });
+  }
+});
 
 app.get("/staff/list", async (req, res) =>{
     const client = await pool.connect();
