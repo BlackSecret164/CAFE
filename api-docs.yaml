@@ -57,9 +57,10 @@ tags:
 paths:
   /file/upload:
     post:
+      summary: Upload a file to Cloudinary
+      operationId: uploadFile
       tags:
         - default
-      summary: Upload an image
       requestBody:
         required: true
         content:
@@ -70,21 +71,24 @@ paths:
                 file:
                   type: string
                   format: binary
+                  description: The file to upload
       responses:
-        '200':
-          description: Image uploaded successfully
+        '201':
+          description: File uploaded successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  imageURL:
+                  message:
                     type: string
-                    example: "https://your-storage-service.com/uploads/product-image.jpg"
+                  imageUrl:
+                    type: string
+                    description: URL of the uploaded image
         '400':
-          description: Bad Request
+          description: Invalid file
         '500':
-          description: Internal Server Error
+          description: Internal server error
   /customer/list:
     get:
       tags:
