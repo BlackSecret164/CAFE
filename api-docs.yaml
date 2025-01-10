@@ -1061,23 +1061,24 @@ components:
           type: integer
         name:
           type: string
-        price_S:
-          type: number
-          format: float
-        price_M:
-          type: number
-          format: float
-        price_L:
-          type: number
-          format: float
-        size:
-          type: string
+        price:
+          type: integer
+        upsize:
+          type: integer
+        sizes:
+          type: boolean
+        sizem:
+          type: boolean
+        sizel:
+          type: boolean
         category:
           type: string
         imageURL:
           type: string
-        hotOrCold:
-          type: string
+        hot:
+          type: boolean
+        cold:
+          type: boolean
         available:
           type: boolean
     Table:
