@@ -1141,6 +1141,8 @@ components:
           description: List of product IDs in the order
           items:
             type: integer
+        status:
+          type: string
     Promote:
       type: object
       properties:
