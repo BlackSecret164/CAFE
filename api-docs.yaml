@@ -1096,6 +1096,8 @@ components:
         seatingTime:
           type: string
           format: date-time
+        seat:
+          type: integer
     Material:
       type: object
       properties:
