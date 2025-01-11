@@ -163,21 +163,20 @@ app.post("/customer", async (req, res) => {
 
 
 app.put("/customer/:id", async (req, res) => {
-    const { name, gender, registrationDate, rank } = req.body; // Xóa phonecustomer khỏi body
-    const { id } = req.params; // Lấy phonecustomer từ URL params
+    const { id, name, gender, registrationDate, rank } = req.body; // Xóa phonecustomer khỏi body
     const client = await pool.connect();
-
+    const idAsInteger = parseInt(id, 10);
     try {
         const query = `
             UPDATE customer
             SET name = $1, gender = $2, registrationdate = $3, rank = $4
             WHERE id = $5
         `;
-        const result = await client.query(query, [name, gender, registrationDate, rank, id]);
+        const result = await client.query(query, [name, gender, registrationDate, rank, idAsInteger]);
         
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
-            return res.status(404).send({ message: "Customer ${phone} not found" });
+            return res.status(404).send({ message: "Customer ${id} not found" });
         }
 
         res.status(200).send({ message: "Customer edited successfully!" });
@@ -259,6 +258,32 @@ app.get("/product/list", async (req, res) =>{
     res.status(404);
 })
 
+app.put("/product/:id", async (req, res) => {
+    const { name, price, upsize, imageUrl, category } = req.body; // Xóa phonecustomer khỏi body
+    const { id } = req.params; // Lấy phonecustomer từ URL params
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            UPDATE product
+            SET name = $1, price = $2, upsize = $3, imageUrl = $4, category =$5
+            WHERE id = $6
+        `;
+        const result = await client.query(query, [name, price, upsize, imageUrl, category, id]);
+        
+        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Customer ${id} not found" });
+        }
+
+        res.status(200).send({ message: "Product edited successfully!" });
+    } catch (error) {
+        console.error("Error editing product:", error);
+        res.status(500).send({ message: "Failed to edit product" });
+    } finally {
+        client.release();
+    }
+});
 
 //table
 app.get("/table/list", async (req, res) =>{
@@ -432,6 +457,33 @@ app.get("/order/:id", async (req, res) => {
         client.release();
     }
 });
+
+// app.put("/order/:id", async (req, res) => {
+//     const { name, gender, registrationDate, rank } = req.body;
+//     const { id } = req.params;
+//     const client = await pool.connect();
+
+//     try {
+//         const query = `
+//             UPDATE customer
+//             SET name = $1, gender = $2, registrationdate = $3, rank = $4
+//             WHERE id = $5
+//         `;
+//         const result = await client.query(query, [name, gender, registrationDate, rank, id]);
+        
+//         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+//         if (result.rowCount === 0) {
+//             return res.status(404).send({ message: "Customer ${phone} not found" });
+//         }
+
+//         res.status(200).send({ message: "Customer edited successfully!" });
+//     } catch (error) {
+//         console.error("Error editing customer:", error);
+//         res.status(500).send({ message: "Failed to edit customer" });
+//     } finally {
+//         client.release();
+//     }
+// });
 
 //promote
 app.get("/promote/list", async (req, res) => {
