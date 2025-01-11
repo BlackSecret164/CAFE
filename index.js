@@ -246,7 +246,7 @@ app.get("/product/list", async (req, res) =>{
     const client = await pool.connect();
 
     try {
-        const result = await client.query("SELECT * FROM product");
+        const result = await client.query("SELECT * FROM product ORDER BY ID ASC");
 
         res.json(result.rows);
     } catch (errors) {
