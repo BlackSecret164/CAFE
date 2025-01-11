@@ -89,6 +89,7 @@ app.post("/file/upload", upload.single("file"), async (req, res) => {
     }
   });
 
+  //staff
 app.get("/staff/list", async (req, res) =>{
     const client = await pool.connect();
 
@@ -105,75 +106,32 @@ app.get("/staff/list", async (req, res) =>{
     res.status(404);
 })
 
+app.post("/staff", async (req, res) => {
+    const { name, phone, birth, address, gender, typeStaff, startDate } = req.body;
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            INSERT INTO staff (name, phone, birth, address, gender, typestaff, startdate)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `;
+        await client.query(query, [ name, phone, birth, address, gender, typeStaff, startDate]);
+        res.status(201).send({ message: "Staff added successfully!" });
+    } catch (error) {
+        console.error("Error adding staff:", error);
+        res.status(500).send({ message: "Failed to add staff" });
+    } finally {
+        client.release();
+    }
+});
+
+//customer
 app.get("/customer/list", async (req, res) =>{
     const client = await pool.connect();
 
     try {
         const result = await client.query("SELECT * FROM customer");
 
-        res.json(result.rows);
-    } catch (errors) {
-        console.log(errors)
-    } finally{
-        client.release();
-    }
-
-    res.status(404);
-})
-
-app.get("/product/list", async (req, res) =>{
-    const client = await pool.connect();
-
-    try {
-        const result = await client.query("SELECT * FROM product");
-
-        res.json(result.rows);
-    } catch (errors) {
-        console.log(errors)
-    } finally{
-        client.release();
-    }
-
-    res.status(404);
-})
-
-app.get("/table/list", async (req, res) =>{
-    const client = await pool.connect();
-
-    try {
-        const result = await client.query("SELECT * FROM tables");
-
-        res.json(result.rows);
-    } catch (errors) {
-        console.log(errors)
-    } finally{
-        client.release();
-    }
-
-    res.status(404);
-})
-
-app.get("/material/list", async (req, res) =>{
-    const client = await pool.connect();
-
-    try {
-        const result = await client.query("SELECT * FROM rawmaterial");
-
-        res.json(result.rows);
-    } catch (errors) {
-        console.log(errors)
-    } finally{
-        client.release();
-    }
-
-    res.status(404);
-})
-
-app.get("/order/list", async (req, res) =>{
-    const client = await pool.connect();
-
-    try {
-        const result = await client.query('SELECT order_tb.id AS "id", customer.id AS "customerID", order_tb.servicetype AS "serviceType", order_tb.totalprice AS "totalPrice", order_tb.staffid AS "staffID", order_tb.tableid AS "tableID", order_tb.orderdate AS "orderDate", array_agg(order_details.productid) AS "productIDs", order_tb.status AS "status" FROM order_tb JOIN customer ON order_tb.phonecustomer = customer.phone JOIN order_details ON order_tb.id = order_details.orderid GROUP BY order_tb.id, customer.id, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate');
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
@@ -203,24 +161,6 @@ app.post("/customer", async (req, res) => {
     }
 });
 
-app.post("/staff", async (req, res) => {
-    const { name, phone, birth, address, gender, typeStaff, startDate } = req.body;
-    const client = await pool.connect();
-
-    try {
-        const query = `
-            INSERT INTO staff (name, phone, birth, address, gender, typestaff, startdate)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-        `;
-        await client.query(query, [ name, phone, birth, address, gender, typeStaff, startDate]);
-        res.status(201).send({ message: "Staff added successfully!" });
-    } catch (error) {
-        console.error("Error adding staff:", error);
-        res.status(500).send({ message: "Failed to add staff" });
-    } finally {
-        client.release();
-    }
-});
 
 app.put("/customer/:id", async (req, res) => {
     const { name, gender, registrationDate, rank } = req.body; // Xóa phonecustomer khỏi body
@@ -279,7 +219,6 @@ app.delete("/customer/:id", async (req, res) => {
     }
 });
 
-
 app.get("/customer/:phone", async (req, res) => {
     const { phone } = req.params;
     const client = await pool.connect();
@@ -303,6 +242,198 @@ app.get("/customer/:phone", async (req, res) => {
     }
 });
 
+//product
+app.get("/product/list", async (req, res) =>{
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query("SELECT * FROM product");
+
+        res.json(result.rows);
+    } catch (errors) {
+        console.log(errors)
+    } finally{
+        client.release();
+    }
+
+    res.status(404);
+})
+
+
+//table
+app.get("/table/list", async (req, res) =>{
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query("SELECT * FROM tables");
+
+        res.json(result.rows);
+    } catch (errors) {
+        console.log(errors)
+    } finally{
+        client.release();
+    }
+
+    res.status(404);
+})
+
+app.post("/table", async(req,res) =>{
+    const { status, seat } = req.body;
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            INSERT INTO tables (status, seat)
+            VALUES ($1, $2)
+        `;
+        await client.query(query, [ status, seat]);
+        res.status(201).send({ message: "Table added successfully!" });
+    } catch (error) {
+        console.error("Error adding table:", error);
+        res.status(500).send({ message: "Failed to add table" });
+    } finally {
+        client.release();
+    }
+})
+
+app.get("/table/:id", async (req, res) => {
+    const { id } = req.params;
+    const client = await pool.connect();
+
+    try {
+        const query = "SELECT * FROM tables WHERE id = $1";
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            // Không tìm thấy khách hàng
+            return res.status(404).json({ message: "Tables not found" });
+        }
+
+        // Trả về thông tin khách hàng
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching table:", error);
+        res.status(500).json({ message: "Failed to fetch table" });
+    } finally {
+        client.release();
+    }
+});
+
+app.delete("/table/:id", async (req, res) => {
+    const { id } = req.params;
+    const client = await pool.connect();
+
+    try {
+        // Ghi log để kiểm tra giá trị nhận được
+        console.log("CustomerID to delete:", id);
+
+        // Xóa dữ liệu trong customer
+        const query = `
+            DELETE FROM tables
+            WHERE id = $1
+        `;
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            // Nếu không tìm thấy bản ghi để xóa
+            return res.status(404).send({ message: "table not found" });
+        }
+
+        res.status(204).send({ message: "table deleted" }); // Xóa thành công,
+    } catch (error) {
+        console.error("Error deleting table:", error);
+        res.status(500).send({ message: "Failed to delete table" });
+    } finally {
+        client.release();
+    }
+});
+
+//material
+app.get("/material/list", async (req, res) =>{
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query("SELECT * FROM rawmaterial");
+
+        res.json(result.rows);
+    } catch (errors) {
+        console.log(errors)
+    } finally{
+        client.release();
+    }
+
+    res.status(404);
+})
+
+
+//order
+app.get("/order/list", async (req, res) =>{
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query('SELECT order_tb.id AS "id", customer.id AS "customerID", order_tb.servicetype AS "serviceType", order_tb.totalprice AS "totalPrice", order_tb.staffid AS "staffID", order_tb.tableid AS "tableID", order_tb.orderdate AS "orderDate", array_agg(order_details.productid) AS "productIDs", order_tb.status AS "status" FROM order_tb JOIN customer ON order_tb.phonecustomer = customer.phone JOIN order_details ON order_tb.id = order_details.orderid GROUP BY order_tb.id, customer.id, order_tb.servicetype, order_tb.totalprice, order_tb.staffid, order_tb.tableid, order_tb.orderdate');
+        res.json(result.rows);
+    } catch (errors) {
+        console.log(errors)
+    } finally{
+        client.release();
+    }
+
+    res.status(404);
+})
+
+app.get("/order/:id", async (req, res) => {
+    const { id } = req.params;
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            SELECT 
+                order_tb.id AS "id", 
+                customer.customerid AS "customerID", 
+                order_tb.servicetype AS "serviceType", 
+                order_tb.totalprice AS "totalPrice", 
+                order_tb.staffid AS "staffID", 
+                order_tb.tableid AS "tableID", 
+                order_tb.orderdate AS "orderDate", 
+                array_agg(order_details.productid) AS "productIDs"
+            FROM 
+                order_tb
+            JOIN 
+                customer 
+            ON 
+                order_tb.phonecustomer = customer.phone
+            JOIN 
+                order_details 
+            ON 
+                order_tb.id = order_details.orderid
+            WHERE 
+                order_tb.id = $1
+            GROUP BY 
+                order_tb.id, 
+                customer.customerid, 
+                order_tb.servicetype, 
+                order_tb.totalprice, 
+                order_tb.staffid, 
+                order_tb.tableid, 
+                order_tb.orderdate;
+        `;
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching order:", error);
+        res.status(500).json({ message: "Failed to fetch order" });
+    } finally {
+        client.release();
+    }
+});
+
+//promote
 app.get("/promote/list", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM PROMOTE");
@@ -313,7 +444,6 @@ app.get("/promote/list", async (req, res) => {
     }
 });
 
-// Lấy thông tin promotion theo ID
 app.get("/promote/:id", async (req, res) => {
     const { id } = req.params;
     try {
@@ -328,7 +458,6 @@ app.get("/promote/:id", async (req, res) => {
     }
 });
 
-// Tạo một promotion mới
 app.post("/promote", async (req, res) => {
     const { name, description, discount, promoteType, startAt, endAt } = req.body;
     try {
@@ -344,7 +473,6 @@ app.post("/promote", async (req, res) => {
     }
 });
 
-// Cập nhật thông tin promotion theo ID
 app.put("/promote/:id", async (req, res) => {
     //const { promoteid } = req.params;
     //const promoteidInt = parseInt(promoteid, 10);
@@ -366,7 +494,6 @@ app.put("/promote/:id", async (req, res) => {
     }
 });
 
-// Xóa promotion theo ID
 app.delete("/promote/:id", async (req, res) => {
     const { id } = req.params;
     try {
@@ -381,7 +508,7 @@ app.delete("/promote/:id", async (req, res) => {
     }
 });
 
-// Lấy danh sách tất cả các coupons
+//coupon
 app.get("/promote/coupon/list", async (req, res) => {
     try {
         const result = await pool.query("SELECT coupon.id,coupon.code, coupon.status, promote.name FROM COUPON JOIN PROMOTE ON coupon.promoteid=promote.id");
@@ -458,57 +585,5 @@ app.delete("/promote/coupon/:id", async (req, res) => {
         res.status(500).send({ message: "Failed to delete coupon" });
     }
 });
-
-app.get("/order/:id", async (req, res) => {
-    const { id } = req.params;
-    const client = await pool.connect();
-
-    try {
-        const query = `
-            SELECT 
-                order_tb.id AS "id", 
-                customer.customerid AS "customerID", 
-                order_tb.servicetype AS "serviceType", 
-                order_tb.totalprice AS "totalPrice", 
-                order_tb.staffid AS "staffID", 
-                order_tb.tableid AS "tableID", 
-                order_tb.orderdate AS "orderDate", 
-                array_agg(order_details.productid) AS "productIDs"
-            FROM 
-                order_tb
-            JOIN 
-                customer 
-            ON 
-                order_tb.phonecustomer = customer.phone
-            JOIN 
-                order_details 
-            ON 
-                order_tb.id = order_details.orderid
-            WHERE 
-                order_tb.id = $1
-            GROUP BY 
-                order_tb.id, 
-                customer.customerid, 
-                order_tb.servicetype, 
-                order_tb.totalprice, 
-                order_tb.staffid, 
-                order_tb.tableid, 
-                order_tb.orderdate;
-        `;
-        const result = await client.query(query, [id]);
-
-        if (result.rowCount === 0) {
-            return res.status(404).json({ message: "Order not found" });
-        }
-
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error("Error fetching order:", error);
-        res.status(500).json({ message: "Failed to fetch order" });
-    } finally {
-        client.release();
-    }
-});
-
 
 app.listen(3000, console.log("Server Running"));
