@@ -259,7 +259,7 @@ app.get("/product/list", async (req, res) =>{
 })
 
 app.put("/product/:id", async (req, res) => {
-    const { name, price, upsize, imageUrl, category } = req.body; // Xóa phonecustomer khỏi body
+    const { name, price, upsize, imageURL, category } = req.body; // Xóa phonecustomer khỏi body
     const { id } = req.params; // Lấy phonecustomer từ URL params
     const idAsInteger = parseInt(id, 10);
     const client = await pool.connect();
@@ -270,7 +270,7 @@ app.put("/product/:id", async (req, res) => {
             SET name = $1, price = $2, upsize = $3, imageUrl = $4, category =$5
             WHERE id = $6
         `;
-        const result = await client.query(query, [name, price, upsize, imageUrl, category, idAsInteger]);
+        const result = await client.query(query, [name, price, upsize, imageURL, category, idAsInteger]);
         
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
