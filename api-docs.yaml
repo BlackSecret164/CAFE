@@ -413,27 +413,31 @@ paths:
       responses:
         "204":
           description: Product deleted
-  /product/{available}:
+  /product/{id}/available:
     put:
       tags:
         - product
-      summary: Update a product available
+      summary: Update product availability
       operationId: updateProductAvailable
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
-        description: Updated product available
+        description: Updated product availability
         required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                id:
-                  type: integer
                 available:
                   type: boolean
       responses:
         "200":
-          description: Product updated available
+          description: Product availability updated
   /table/list:
     get:
       tags:

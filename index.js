@@ -432,31 +432,34 @@ app.get("/product/:id", async (req, res) => {
     }
 });
 
-app.put("/product/:available", async (req, res) => {
-    const { id, available } = req.body;
+app.put("/product/:id/available", async (req, res) => {
+    const { available } = req.body; // Lấy "available" từ body
+    const { id } = req.params; // Lấy "id" từ URL
+    const idAsInteger = parseInt(id, 10);  
     const client = await pool.connect();
-
+  
     try {
-        const query = `
-            UPDATE product
-            SET available =$1
-            WHERE id = $2
-        `;
-        const result = await client.query(query, [available, id]);
-
-        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
-        if (result.rowCount === 0) {
-            return res.status(404).send({ message: "Product ${id} not found" });
-        }
-
-        res.status(200).send({ message: "Product edited successfully!" });
+      // Thực thi câu truy vấn
+      const query = `
+        UPDATE product
+        SET available = $1
+        WHERE id = $2
+      `;
+      const result = await client.query(query, [available, idAsInteger]);
+  
+      // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+      if (result.rowCount === 0) {
+        return res.status(404).send({ message: `Product ${id} not found` });
+      }
+  
+      res.status(200).send({ message: "Product availability updated successfully!" });
     } catch (error) {
-        console.error("Error editing product:", error);
-        res.status(500).send({ message: "Failed to edit product" });
+      console.error("Error updating product availability:", error);
+      res.status(500).send({ message: "Failed to update product availability" });
     } finally {
-        client.release();
+      client.release();
     }
-});
+  });
 
 //table
 app.get("/table/list", async (req, res) => {
