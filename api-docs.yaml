@@ -54,6 +54,11 @@ tags:
     externalDocs:
       description: Find out more about promote
       url: http://swagger.io
+  - name: membership
+    description: Manage membership
+    externalDocs:
+      description: Find out more about membership
+      url: http://swagger.io
 paths:
   /file/upload:
     post:
@@ -962,6 +967,142 @@ paths:
           description: Coupon deleted successfully
         "404":
           description: Coupon not found
+  /membership/list:
+    get:
+      tags:
+        - membership
+      summary: Get list of membership
+      description: Retrieve a list of all membership
+      operationId: getMemberships
+      responses:
+        "200":
+          description: A list of memberships
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Membership"
+        "500":
+          description: Internal Server Error
+  /membership:
+    post:
+      tags:
+        - membership
+      summary: Add a new membership to the store
+      description: Add a new membership to the store
+      operationId: addMembership
+      requestBody:
+        description: Create a new membership in the store
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Membership"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Membership"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Membership"
+        "400":
+          description: Invalid input
+        "422":
+          description: Validation exception
+      security:
+        - cfwfenstore_auth:
+            - write:memberships
+            - read:memberships
+  /membership/{rank}:
+    get:
+      tags:
+        - membership
+      summary: Find membership by rank
+      description: Returns a single rank
+      operationId: getMembershipByRank
+      parameters:
+        - name: id
+          in: path
+          description: membership of membership to return
+          required: true
+          schema:
+            type: string
+            maxLength: 15
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Membership"
+        "400":
+          description: Invalid PhoneNumber supplied
+        "404":
+          description: Membership not found
+      security:
+        - api_key: []
+        - cfwfenstore_auth:
+            - write:memberships
+            - read:memberships
+  /membership/{id}:
+    put:
+      tags:
+        - membership
+      summary: Update an existing membership
+      description: Update an existing membership by id
+      operationId: updateMembership
+      requestBody:
+        description: Update an existent Membership in the store
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Membership"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Membership"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Membership"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Membership not found
+        "422":
+          description: Validation exception
+      security:
+        - cfwfenstore_auth:
+            - write:memberships
+            - read:memberships
+    delete:
+      tags:
+        - membership
+      summary: Deletes a Membership
+      description: delete a Membership
+      operationId: deleteMembership
+      parameters:
+        - name: id
+          in: path
+          description: Membershipid to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        "400":
+          description: Invalid membership value
+      security:
+        - cfwfenstore_auth:
+            - write:memberships
+            - read:memberships
+
 components:
   schemas:
     Customer:
@@ -1211,6 +1352,21 @@ components:
         promoteId:
           type: integer
           example: 1
+    Membership:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        rank:
+          type: string
+          example: "Đồng"
+        mprice:
+          type: integer
+          example: 200000
+        discount:
+          type: integer
+          example: 2000
   requestBodies:
     Customer:
       description: Customer object that needs to be added to the store

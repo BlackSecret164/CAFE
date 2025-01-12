@@ -987,4 +987,119 @@ app.delete("/promote/coupon/:id", async (req, res) => {
     }
 });
 
+//membership
+app.get("/membership/list", async (req, res) => {
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query("SELECT * FROM membership ORDER BY ID ASC");
+
+        res.json(result.rows);
+    } catch (errors) {
+        console.log(errors)
+    } finally {
+        client.release();
+    }
+
+    res.status(404);
+})
+
+app.post("/membership", async (req, res) => {
+    const { rank, mprice, discount } = req.body;
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            INSERT INTO membership (rank, mprice, discount)
+            VALUES ($1, $2, $3)
+        `;
+        await client.query(query, [rank, mprice, discount]);
+        res.status(201).send({ message: "Membership added successfully!" });
+    } catch (error) {
+        console.error("Error adding membership:", error);
+        res.status(500).send({ message: "Failed to add membership" });
+    } finally {
+        client.release();
+    }
+})
+
+app.put("/membership/:id", async (req, res) => {
+    const { id, rank, mprice, discount } = req.body;
+    const idAsInteger = parseInt(id, 10);
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            UPDATE membership
+            SET rank = $1, mpoint = $2, discount = $3
+            WHERE id = $4
+        `;
+        const result = await client.query(query, [rank, mprice, discount, idAsInteger]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "membership ${id} not found" });
+        }
+
+        res.status(200).send({ message: "Membership edited successfully!" });
+    } catch (error) {
+        console.error("Error editing membership:", error);
+        res.status(500).send({ message: "Failed to edit material" });
+    } finally {
+        client.release();
+    }
+});
+
+app.get("/membership/:rank", async (req, res) => {
+    const { rank } = req.params;
+    const client = await pool.connect();
+
+    try {
+        const query = "SELECT * FROM membership WHERE rank = $1";
+        const result = await client.query(query, [rank]);
+
+        if (result.rowCount === 0) {
+            // Không tìm thấy khách hàng
+            return res.status(404).json({ message: "Membership not found" });
+        }
+
+        // Trả về thông tin khách hàng
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching membership:", error);
+        res.status(500).json({ message: "Failed to fetch membership" });
+    } finally {
+        client.release();
+    }
+});
+
+app.delete("/membership/:id", async (req, res) => {
+    const { id } = req.params;
+    const client = await pool.connect();
+
+    try {
+        // Ghi log để kiểm tra giá trị nhận được
+        console.log("MembershipID to delete:", id);
+
+        // Xóa dữ liệu trong customer
+        const query = `
+            DELETE FROM membership
+            WHERE id = $1
+        `;
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            // Nếu không tìm thấy bản ghi để xóa
+            return res.status(404).send({ message: "membership not found" });
+        }
+
+        res.status(204).send({ message: "membership deleted" }); // Xóa thành công,
+    } catch (error) {
+        console.error("Error deleting membership:", error);
+        res.status(500).send({ message: "Failed to delete membership" });
+    } finally {
+        client.release();
+    }
+});
+
+
 app.listen(3000, console.log("Server Running"));
