@@ -1025,7 +1025,7 @@ paths:
       description: Returns a single rank
       operationId: getMembershipByRank
       parameters:
-        - name: id
+        - name: rank
           in: path
           description: membership of membership to return
           required: true
