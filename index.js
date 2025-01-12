@@ -7,7 +7,7 @@ const { Pool } = require("pg");
 const swaggerUi = require("swagger-ui-express");
 const fs = require("fs");
 const YAML = require("yaml");
-const file  = fs.readFileSync("./api-docs.yaml", "utf8");
+const file = fs.readFileSync("./api-docs.yaml", "utf8");
 const swaggerDocument = YAML.parse(file);
 const cloudinary = require('cloudinary').v2;
 
@@ -32,7 +32,7 @@ app.options('*', (req, res) => {
 });
 app.use(express.json());
 
-const {PGHOST, PGDATABASE, PGUSER, PGPASSWORD} = process.env;
+const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 
 const pool = new Pool({
     host: PGHOST,
@@ -40,7 +40,7 @@ const pool = new Pool({
     user: PGUSER,
     password: PGPASSWORD,
     port: 5432,
-    ssl:{
+    ssl: {
         require: true,
         rejectUnauthorized: false
     }
@@ -56,41 +56,41 @@ const FormData = require("form-data");
 // API Endpoint để tải lên tệp
 app.post("/file/upload", upload.single("file"), async (req, res) => {
     try {
-      const file = req.file; // Lấy file từ request
-      if (!file) {
-        return res.status(400).json({ message: "No file uploaded" });
-      }
-  
-      // Tạo FormData để gửi lên Cloudinary
-      const formData = new FormData();
-      formData.append("file", file.buffer, file.originalname); // Tệp từ buffer
-      formData.append("upload_preset", "upload-coffeewfen"); // Tên upload preset
-      formData.append("folder", "doan"); // Thư mục chỉ định (nếu cần)
-  
-      // Gửi yêu cầu POST đến Cloudinary
-      const cloudinaryResponse = await axios.post(
-        "https://api.cloudinary.com/v1_1/dkntmdcja/image/upload",
-        formData,
-        {
-          headers: {
-            ...formData.getHeaders(), // Header của FormData
-          },
+        const file = req.file; // Lấy file từ request
+        if (!file) {
+            return res.status(400).json({ message: "No file uploaded" });
         }
-      );
-  
-      // Trả về URL của ảnh đã upload
-      res.status(201).json({
-        message: "File uploaded successfully",
-        imageUrl: cloudinaryResponse.data.secure_url, // URL ảnh
-      });
-    } catch (error) {
-      console.error("Error uploading file:", error.response ? error.response.data : error.message);
-      res.status(500).json({ message: "Failed to upload file", error: error.response ? error.response.data : error.message });
-    }
-  });
 
-  //staff
-app.get("/staff/list", async (req, res) =>{
+        // Tạo FormData để gửi lên Cloudinary
+        const formData = new FormData();
+        formData.append("file", file.buffer, file.originalname); // Tệp từ buffer
+        formData.append("upload_preset", "upload-coffeewfen"); // Tên upload preset
+        formData.append("folder", "doan"); // Thư mục chỉ định (nếu cần)
+
+        // Gửi yêu cầu POST đến Cloudinary
+        const cloudinaryResponse = await axios.post(
+            "https://api.cloudinary.com/v1_1/dkntmdcja/image/upload",
+            formData,
+            {
+                headers: {
+                    ...formData.getHeaders(), // Header của FormData
+                },
+            }
+        );
+
+        // Trả về URL của ảnh đã upload
+        res.status(201).json({
+            message: "File uploaded successfully",
+            imageUrl: cloudinaryResponse.data.secure_url, // URL ảnh
+        });
+    } catch (error) {
+        console.error("Error uploading file:", error.response ? error.response.data : error.message);
+        res.status(500).json({ message: "Failed to upload file", error: error.response ? error.response.data : error.message });
+    }
+});
+
+//staff
+app.get("/staff/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
@@ -99,7 +99,7 @@ app.get("/staff/list", async (req, res) =>{
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
-    } finally{
+    } finally {
         client.release();
     }
 
@@ -115,7 +115,7 @@ app.post("/staff", async (req, res) => {
             INSERT INTO staff (name, phone, birth, address, gender, typestaff, startdate)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
-        await client.query(query, [ name, phone, birth, address, gender, typeStaff, startDate]);
+        await client.query(query, [name, phone, birth, address, gender, typeStaff, startDate]);
         res.status(201).send({ message: "Staff added successfully!" });
     } catch (error) {
         console.error("Error adding staff:", error);
@@ -125,8 +125,88 @@ app.post("/staff", async (req, res) => {
     }
 });
 
+app.put("/staff/:id", async (req, res) => {
+    const { id, name, phone, birth, address, gender, typeStaff, startDate } = req.body;
+    const client = await pool.connect();
+    const idAsInteger = parseInt(id, 10);
+    try {
+        const query = `
+            UPDATE staff
+            SET name = $1, phone = $2, birth = $3, address = $4, gender = $5, typestaff = $6, startdate = $7
+            WHERE id = $8
+        `;
+        const result = await client.query(query, [name, phone, birth, address, gender, typeStaff, startDate, idAsInteger]);
+
+        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "staff ${id} not found" });
+        }
+
+        res.status(200).send({ message: "staff edited successfully!" });
+    } catch (error) {
+        console.error("Error editing staff:", error);
+        res.status(500).send({ message: "Failed to edit staff" });
+    } finally {
+        client.release();
+    }
+});
+
+
+app.delete("/staff/:id", async (req, res) => {
+    const { id } = req.params; // Lấy phonecustomer từ params
+    const client = await pool.connect();
+
+    try {
+        // Ghi log để kiểm tra giá trị nhận được
+        console.log("StaffID to delete:", id);
+
+        // Xóa dữ liệu trong customer
+        const query = `
+            DELETE FROM staff
+            WHERE id = $1
+        `;
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            // Nếu không tìm thấy bản ghi để xóa
+            return res.status(404).send({ message: "staff not found" });
+        }
+
+        res.status(204).send({ message: "staff deleted" }); // Xóa thành công,
+    } catch (error) {
+        console.error("Error deleting staff:", error);
+        res.status(500).send({ message: "Failed to delete staff" });
+    } finally {
+        client.release();
+    }
+});
+
+app.get("/staff/:id", async (req, res) => {
+    const { id } = req.params;
+    const client = await pool.connect();
+
+    try {
+        const query = "SELECT * FROM staff WHERE id = $1";
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            // Không tìm thấy khách hàng
+            return res.status(404).json({ message: "staff not found" });
+        }
+
+        // Trả về thông tin khách hàng
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching staff:", error);
+        res.status(500).json({ message: "Failed to fetch staff" });
+    } finally {
+        client.release();
+    }
+});
+
+
 //customer
-app.get("/customer/list", async (req, res) =>{
+app.get("/customer/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
@@ -135,7 +215,7 @@ app.get("/customer/list", async (req, res) =>{
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
-    } finally{
+    } finally {
         client.release();
     }
 
@@ -151,7 +231,7 @@ app.post("/customer", async (req, res) => {
             INSERT INTO customer (name, phone, gender, registrationdate)
             VALUES ($1, $2, $3, $4)
         `;
-        await client.query(query, [ name, phone, gender, registrationDate]);
+        await client.query(query, [name, phone, gender, registrationDate]);
         res.status(201).send({ message: "Customer added successfully!" });
     } catch (error) {
         console.error("Error adding customer:", error);
@@ -160,7 +240,6 @@ app.post("/customer", async (req, res) => {
         client.release();
     }
 });
-
 
 app.put("/customer/:id", async (req, res) => {
     const { id, name, gender, registrationDate, rank } = req.body; // Xóa phonecustomer khỏi body
@@ -173,7 +252,7 @@ app.put("/customer/:id", async (req, res) => {
             WHERE id = $5
         `;
         const result = await client.query(query, [name, gender, registrationDate, rank, idAsInteger]);
-        
+
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
             return res.status(404).send({ message: "Customer ${id} not found" });
@@ -187,7 +266,6 @@ app.put("/customer/:id", async (req, res) => {
         client.release();
     }
 });
-
 
 app.delete("/customer/:id", async (req, res) => {
     const { id } = req.params; // Lấy phonecustomer từ params
@@ -242,7 +320,7 @@ app.get("/customer/:phone", async (req, res) => {
 });
 
 //product
-app.get("/product/list", async (req, res) =>{
+app.get("/product/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
@@ -251,12 +329,31 @@ app.get("/product/list", async (req, res) =>{
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
-    } finally{
+    } finally {
         client.release();
     }
 
     res.status(404);
 })
+
+app.post("/product", async (req, res) => {
+    const { name, price, upsize, imageURL, category } = req.body;
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            INSERT INTO product (name, price, upsize, imageURL, category)
+            VALUES ($1, $2, $3, $4, $5)
+        `;
+        await client.query(query, [name, price, upsize, imageURL, category]);
+        res.status(201).send({ message: "Product added successfully!" });
+    } catch (error) {
+        console.error("Error adding product:", error);
+        res.status(500).send({ message: "Failed to add product" });
+    } finally {
+        client.release();
+    }
+});
 
 app.put("/product/:id", async (req, res) => {
     const { name, price, upsize, imageURL, category } = req.body; // Xóa phonecustomer khỏi body
@@ -267,11 +364,88 @@ app.put("/product/:id", async (req, res) => {
     try {
         const query = `
             UPDATE product
-            SET name = $1, price = $2, upsize = $3, imageUrl = $4, category =$5
+            SET name = $1, price = $2, upsize = $3, imageURL = $4, category =$5
             WHERE id = $6
         `;
         const result = await client.query(query, [name, price, upsize, imageURL, category, idAsInteger]);
-        
+
+        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Product ${id} not found" });
+        }
+
+        res.status(200).send({ message: "Product edited successfully!" });
+    } catch (error) {
+        console.error("Error editing product:", error);
+        res.status(500).send({ message: "Failed to edit product" });
+    } finally {
+        client.release();
+    }
+});
+
+app.delete("/product/:id", async (req, res) => {
+    const { id } = req.params;
+    const client = await pool.connect();
+
+    try {
+        // Ghi log để kiểm tra giá trị nhận được
+        console.log("ProductID to delete:", id);
+
+        const query = `
+            DELETE FROM Product
+            WHERE id = $1
+        `;
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Product not found" });
+        }
+
+        res.status(204).send({ message: "Product deleted" }); // Xóa thành công,
+    } catch (error) {
+        console.error("Error deleting Product:", error);
+        res.status(500).send({ message: "Failed to delete product" });
+    } finally {
+        client.release();
+    }
+});
+
+app.get("/product/:id", async (req, res) => {
+    const { id } = req.params;
+    const client = await pool.connect();
+
+    try {
+        const query = "SELECT * FROM product WHERE id = $1";
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            // Không tìm thấy khách hàng
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching product:", error);
+        res.status(500).json({ message: "Failed to fetch product" });
+    } finally {
+        client.release();
+    }
+});
+
+app.put("/product/:available", async (req, res) => {
+    const { available } = req.body;
+    const { id } = req.params;
+    const idAsInteger = parseInt(id, 10);
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            UPDATE product
+            SET available =$1
+            WHERE id = $2
+        `;
+        const result = await client.query(query, [available, idAsInteger]);
+
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
             return res.status(404).send({ message: "Product ${id} not found" });
@@ -287,7 +461,7 @@ app.put("/product/:id", async (req, res) => {
 });
 
 //table
-app.get("/table/list", async (req, res) =>{
+app.get("/table/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
@@ -296,14 +470,14 @@ app.get("/table/list", async (req, res) =>{
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
-    } finally{
+    } finally {
         client.release();
     }
 
     res.status(404);
 })
 
-app.post("/table", async(req,res) =>{
+app.post("/table", async (req, res) => {
     const { status, seat } = req.body;
     const client = await pool.connect();
 
@@ -312,7 +486,7 @@ app.post("/table", async(req,res) =>{
             INSERT INTO tables (status, seat)
             VALUES ($1, $2)
         `;
-        await client.query(query, [ status, seat]);
+        await client.query(query, [status, seat]);
         res.status(201).send({ message: "Table added successfully!" });
     } catch (error) {
         console.error("Error adding table:", error);
@@ -321,6 +495,33 @@ app.post("/table", async(req,res) =>{
         client.release();
     }
 })
+
+app.put("/table/:id", async (req, res) => {
+    const { status, phoneOrder, bookingTime, seatingTime, seat } = req.body;
+    const { id } = req.params;
+    const idAsInteger = parseInt(id, 10);
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            UPDATE tables
+            SET status = $1, phoneorder = $2, bookingtime = $3, seatingtime = $4, seat =$5
+            WHERE id = $6
+        `;
+        const result = await client.query(query, [status, phoneOrder, bookingTime, seatingTime, seat, idAsInteger]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Table ${id} not found" });
+        }
+
+        res.status(200).send({ message: "Table edited successfully!" });
+    } catch (error) {
+        console.error("Error editing table:", error);
+        res.status(500).send({ message: "Failed to edit table" });
+    } finally {
+        client.release();
+    }
+});
 
 app.get("/table/:id", async (req, res) => {
     const { id } = req.params;
@@ -375,7 +576,7 @@ app.delete("/table/:id", async (req, res) => {
 });
 
 //material
-app.get("/material/list", async (req, res) =>{
+app.get("/material/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
@@ -384,16 +585,113 @@ app.get("/material/list", async (req, res) =>{
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
-    } finally{
+    } finally {
         client.release();
     }
 
     res.status(404);
 })
 
+app.post("/material", async (req, res) => {
+    const { name, quantityImported, quantityStock, price, storageType, importDate, expiryDate } = req.body;
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            INSERT INTO rawmaterial (name, quantityImported, quantityStock, price, storageType, importDate, expiryDate)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `;
+        await client.query(query, [name, quantityImported, quantityStock, price, storageType, importDate, expiryDate]);
+        res.status(201).send({ message: "Material added successfully!" });
+    } catch (error) {
+        console.error("Error adding material:", error);
+        res.status(500).send({ message: "Failed to add material" });
+    } finally {
+        client.release();
+    }
+})
+
+app.put("/material/:id", async (req, res) => {
+    const { name, quantityImported, quantityStock, price, storageType, importDate, expiryDate } = req.body;
+    const { id } = req.params;
+    const idAsInteger = parseInt(id, 10);
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            UPDATE rawmaterial
+            SET name = $1, quantityImported = $2, quantityStock = $3, price = $4, storageType = $5, importDate = $6, expiryDate = $7
+            WHERE id = $8
+        `;
+        const result = await client.query(query, [name, quantityImported, quantityStock, price, storageType, importDate, expiryDate, idAsInteger]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Material ${id} not found" });
+        }
+
+        res.status(200).send({ message: "MAterial edited successfully!" });
+    } catch (error) {
+        console.error("Error editing material:", error);
+        res.status(500).send({ message: "Failed to edit material" });
+    } finally {
+        client.release();
+    }
+});
+
+app.get("/material/:id", async (req, res) => {
+    const { id } = req.params;
+    const client = await pool.connect();
+
+    try {
+        const query = "SELECT * FROM rawmaterial WHERE id = $1";
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            // Không tìm thấy khách hàng
+            return res.status(404).json({ message: "Material not found" });
+        }
+
+        // Trả về thông tin khách hàng
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching material:", error);
+        res.status(500).json({ message: "Failed to fetch material" });
+    } finally {
+        client.release();
+    }
+});
+
+app.delete("/material/:id", async (req, res) => {
+    const { id } = req.params;
+    const client = await pool.connect();
+
+    try {
+        // Ghi log để kiểm tra giá trị nhận được
+        console.log("MaterialID to delete:", id);
+
+        // Xóa dữ liệu trong customer
+        const query = `
+            DELETE FROM rawmaterial
+            WHERE id = $1
+        `;
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            // Nếu không tìm thấy bản ghi để xóa
+            return res.status(404).send({ message: "material not found" });
+        }
+
+        res.status(204).send({ message: "material deleted" }); // Xóa thành công,
+    } catch (error) {
+        console.error("Error deleting material:", error);
+        res.status(500).send({ message: "Failed to delete material" });
+    } finally {
+        client.release();
+    }
+});
 
 //order
-app.get("/order/list", async (req, res) =>{
+app.get("/order/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
@@ -401,11 +699,30 @@ app.get("/order/list", async (req, res) =>{
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
-    } finally{
+    } finally {
         client.release();
     }
 
     res.status(404);
+})
+
+app.post("/order", async (req, res) => {
+    const { customerID, serviceType, totalPrice, orderDate, staffID, status } = req.body;
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            INSERT INTO order_tb (customerid, serviceType, totalprice, orderDate, staffID, status)
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `;
+        await client.query(query, [customerID, serviceType, totalPrice, orderDate, staffID, status]);
+        res.status(201).send({ message: "Order added successfully!" });
+    } catch (error) {
+        console.error("Error adding order:", error);
+        res.status(500).send({ message: "Failed to add order" });
+    } finally {
+        client.release();
+    }
 })
 
 app.get("/order/:id", async (req, res) => {
@@ -459,32 +776,62 @@ app.get("/order/:id", async (req, res) => {
     }
 });
 
-// app.put("/order/:id", async (req, res) => {
-//     const { name, gender, registrationDate, rank } = req.body;
-//     const { id } = req.params;
-//     const client = await pool.connect();
+app.put("/order/:id", async (req, res) => {
+    const { customerID, serviceType, totalPrice, orderDate, staffID, status } = req.body;
+    const { id } = req.params;
+    const idAsInteger = parseInt(id, 10);
+    const client = await pool.connect();
 
-//     try {
-//         const query = `
-//             UPDATE customer
-//             SET name = $1, gender = $2, registrationdate = $3, rank = $4
-//             WHERE id = $5
-//         `;
-//         const result = await client.query(query, [name, gender, registrationDate, rank, id]);
-        
-//         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
-//         if (result.rowCount === 0) {
-//             return res.status(404).send({ message: "Customer ${phone} not found" });
-//         }
+    try {
+        const query = `
+             UPDATE order_tb
+             SET customerid = $1, servicetype = $2, totalprice = $3, orderDate = $4, staffID =$5, status = $6
+             WHERE id = $7
+         `;
+        const result = await client.query(query, [customerID, serviceType, totalPrice, orderDate, staffID, status, idAsInteger]);
 
-//         res.status(200).send({ message: "Customer edited successfully!" });
-//     } catch (error) {
-//         console.error("Error editing customer:", error);
-//         res.status(500).send({ message: "Failed to edit customer" });
-//     } finally {
-//         client.release();
-//     }
-// });
+        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Order ${id} not found" });
+        }
+
+        res.status(200).send({ message: "Order edited successfully!" });
+    } catch (error) {
+        console.error("Error editing order:", error);
+        res.status(500).send({ message: "Failed to edit order" });
+    } finally {
+        client.release();
+    }
+});
+
+app.delete("/order/:id", async (req, res) => {
+    const { id } = req.params;
+    const client = await pool.connect();
+
+    try {
+        // Ghi log để kiểm tra giá trị nhận được
+        console.log("OrderID to delete:", id);
+
+        // Xóa dữ liệu trong customer
+        const query = `
+            DELETE FROM order_tb
+            WHERE id = $1
+        `;
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            // Nếu không tìm thấy bản ghi để xóa
+            return res.status(404).send({ message: "order not found" });
+        }
+
+        res.status(204).send({ message: "Order deleted" }); // Xóa thành công,
+    } catch (error) {
+        console.error("Error deleting order:", error);
+        res.status(500).send({ message: "Failed to delete order" });
+    } finally {
+        client.release();
+    }
+});
 
 //promote
 app.get("/promote/list", async (req, res) => {
@@ -591,7 +938,7 @@ app.get("/promote/coupon/:id", async (req, res) => {
 app.post("/promote/coupon", async (req, res) => {
     const { code, status, promoteId } = req.body;
     try {
-    
+
         const result = await pool.query(
             `INSERT INTO COUPON (CODE, STATUS, PROMOTEID) VALUES ($1, $2, $3) RETURNING *`,
             [code, status, promoteId]
