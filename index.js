@@ -94,7 +94,7 @@ app.get("/staff/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query("SELECT * FROM staff");
+        const result = await client.query("SELECT * FROM staff ORDER BY ID ASC");
 
         res.json(result.rows);
     } catch (errors) {
@@ -210,7 +210,7 @@ app.get("/customer/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query("SELECT * FROM customer");
+        const result = await client.query("SELECT * FROM customer ORDER BY ID ASC");
 
         res.json(result.rows);
     } catch (errors) {
@@ -466,7 +466,7 @@ app.get("/table/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query("SELECT * FROM tables");
+        const result = await client.query("SELECT * FROM tables ORDER BY ID ASC");
 
         res.json(result.rows);
     } catch (errors) {
@@ -581,7 +581,7 @@ app.get("/material/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query("SELECT * FROM rawmaterial");
+        const result = await client.query("SELECT * FROM rawmaterial ORDER BY ID ASC");
 
         res.json(result.rows);
     } catch (errors) {
@@ -837,7 +837,7 @@ app.delete("/order/:id", async (req, res) => {
 //promote
 app.get("/promote/list", async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM PROMOTE");
+        const result = await pool.query("SELECT * FROM PROMOTE ORDER BY ID ASC");
         res.status(200).json(result.rows);
     } catch (error) {
         console.error("Error fetching promotions:", error);
