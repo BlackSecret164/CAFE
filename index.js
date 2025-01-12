@@ -433,9 +433,7 @@ app.get("/product/:id", async (req, res) => {
 });
 
 app.put("/product/:available", async (req, res) => {
-    const { available } = req.body;
-    const { id } = req.params;
-    const idAsInteger = parseInt(id, 10);
+    const { id, available } = req.body;
     const client = await pool.connect();
 
     try {
@@ -444,7 +442,7 @@ app.put("/product/:available", async (req, res) => {
             SET available =$1
             WHERE id = $2
         `;
-        const result = await client.query(query, [available, idAsInteger]);
+        const result = await client.query(query, [available, id]);
 
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {

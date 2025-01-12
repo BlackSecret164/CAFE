@@ -419,12 +419,6 @@ paths:
         - product
       summary: Update a product available
       operationId: updateProductAvailable
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
       requestBody:
         description: Updated product available
         required: true
@@ -433,6 +427,8 @@ paths:
             schema:
               type: object
               properties:
+                id:
+                  type: integer
                 available:
                   type: boolean
       responses:
