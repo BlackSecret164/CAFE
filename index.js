@@ -12,7 +12,7 @@ const swaggerDocument = YAML.parse(file);
 const cloudinary = require('cloudinary').v2;
 
 const corsOptions = {
-    origin: ['http://localhost:3000', 'https://cafe-k5p5.onrender.com'], // Danh sách các origin được phép
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'https://cafe-k5p5.onrender.com'], // Danh sách các origin được phép
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Phương thức HTTP được phép
     allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Methods', 'ngrok-skip-browser-warning', 'access-control-allow-origin'], // Header được phép
     //Credential: true,
