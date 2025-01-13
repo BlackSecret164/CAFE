@@ -739,19 +739,19 @@ app.get("/order/:id", async (req, res) => {
         const query = `
             SELECT 
                 order_tb.id AS "id", 
-                customer.customerid AS "customerID", 
+                order_tb.phonecustomer AS "phone", 
                 order_tb.servicetype AS "serviceType", 
                 order_tb.totalprice AS "totalPrice", 
-                order_tb.staffid AS "staffID", 
+                staff.name AS "staffName", 
                 order_tb.tableid AS "tableID", 
                 order_tb.orderdate AS "orderDate", 
                 array_agg(order_details.productid) AS "productIDs"
             FROM 
                 order_tb
             JOIN 
-                customer 
+                staff 
             ON 
-                order_tb.phonecustomer = customer.phone
+                order_tb.staffid = staff.id
             JOIN 
                 order_details 
             ON 
@@ -760,10 +760,10 @@ app.get("/order/:id", async (req, res) => {
                 order_tb.id = $1
             GROUP BY 
                 order_tb.id, 
-                customer.customerid, 
+                order_tb.phone, 
                 order_tb.servicetype, 
                 order_tb.totalprice, 
-                order_tb.staffid, 
+                staff.name, 
                 order_tb.tableid, 
                 order_tb.orderdate;
         `;
@@ -783,7 +783,7 @@ app.get("/order/:id", async (req, res) => {
 });
 
 app.put("/order/:id", async (req, res) => {
-    const { customerID, serviceType, totalPrice, orderDate, staffID, status } = req.body;
+    const { phone, serviceType, totalPrice, orderDate, status } = req.body;
     const { id } = req.params;
     const idAsInteger = parseInt(id, 10);
     const client = await pool.connect();
@@ -791,10 +791,10 @@ app.put("/order/:id", async (req, res) => {
     try {
         const query = `
              UPDATE order_tb
-             SET customerid = $1, servicetype = $2, totalprice = $3, orderDate = $4, staffID =$5, status = $6
-             WHERE id = $7
+             SET phonecustomer = $1, servicetype = $2, totalprice = $3, orderDate = $4, status = $5
+             WHERE id = $6
          `;
-        const result = await client.query(query, [customerID, serviceType, totalPrice, orderDate, staffID, status, idAsInteger]);
+        const result = await client.query(query, [phone, serviceType, totalPrice, orderDate, status, idAsInteger]);
 
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
