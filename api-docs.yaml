@@ -682,8 +682,30 @@ paths:
             application/json:
               schema:
                 type: array
-                items:
-                  $ref: "#/components/schemas/Order"
+                properties:
+                  id:
+                    type: integer
+                  phone:
+                    type: string
+                  serviceType:
+                    type: string
+                  totalPrice:
+                    type: number
+                    format: float
+                  staffName:
+                    type: string
+                  tableID:
+                    type: integer
+                  orderDate:
+                    type: string
+                    format: date
+                  productIDs:
+                    type: array
+                    description: List of product IDs in the order
+                    items:
+                      type: integer
+                  status:
+                    type: string
         "500":
           description: Internal Server Error
   /order:
@@ -1316,7 +1338,7 @@ components:
       properties:
         id:
           type: integer
-        customerID:
+        phone:
           type: string
         serviceType:
           type: string
