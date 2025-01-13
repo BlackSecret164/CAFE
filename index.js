@@ -589,7 +589,7 @@ app.put("/table/complete/:id", async (req, res) => {
     try {
         const query = `
              UPDATE tables
-             SET status = "Available", phoneorder = null, bookingtime = null, seatingtime = null
+             SET status = 'Available', phoneorder = null, bookingtime = null, seatingtime = null
              WHERE id = $1
          `;
         const result = await client.query(query, [idAsInteger]);
@@ -875,7 +875,7 @@ app.put("/order/complete/:id", async (req, res) => {
     try {
         const query = `
              UPDATE order_tb
-             SET status = "Hoàn thành"
+             SET status = 'Hoàn thành'
              WHERE id = $1
          `;
         const result = await client.query(query, [idAsInteger]);
@@ -902,7 +902,7 @@ app.put("/order/cancel/:id", async (req, res) => {
     try {
         const query = `
              UPDATE order_tb
-             SET status = "Đã hủy"
+             SET status = 'Đã hủy'
              WHERE id = $1
          `;
         const result = await client.query(query, [idAsInteger]);
