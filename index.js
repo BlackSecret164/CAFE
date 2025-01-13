@@ -242,9 +242,10 @@ app.post("/customer", async (req, res) => {
 });
 
 app.put("/customer/:id", async (req, res) => {
-    const { id, name, gender, registrationDate, rank } = req.body; // Xóa phonecustomer khỏi body
-    const client = await pool.connect();
+    const { name, gender, registrationDate, rank } = req.body; // Xóa phonecustomer khỏi body
+    const { id } = req.params; // Lấy phonecustomer từ URL params
     const idAsInteger = parseInt(id, 10);
+    const client = await pool.connect();
     try {
         const query = `
             UPDATE customer
@@ -899,6 +900,7 @@ app.put("/promote/:id", async (req, res) => {
 app.delete("/promote/:id", async (req, res) => {
     const { id } = req.params;
     try {
+        const result1 = await pool.query("DELETE FROM COUPON WHERE PROMOTEID = $1", [id]);
         const result = await pool.query("DELETE FROM PROMOTE WHERE ID = $1", [id]);
         if (result.rowCount === 0) {
             return res.status(404).send({ message: `Promotion with ID ${id} not found` });
@@ -913,8 +915,39 @@ app.delete("/promote/:id", async (req, res) => {
 //coupon
 app.get("/promote/coupon/list", async (req, res) => {
     try {
-        const result = await pool.query("SELECT coupon.id,coupon.code, coupon.status, promote.name FROM COUPON JOIN PROMOTE ON coupon.promoteid=promote.id");
-        res.status(200).json(result.rows);
+        const result = await pool.query(`
+            SELECT 
+                coupon.id AS coupon_id,
+                coupon.code,
+                coupon.status,
+                promote.id AS promote_id,
+                promote.name,
+                promote.description,
+                promote.discount,
+                promote.promoteType,
+                promote.startAt,
+                promote.endAt
+            FROM COUPON
+            JOIN PROMOTE ON coupon.promoteid = promote.id
+        `);
+
+        // Xử lý dữ liệu để tổ chức lại theo cấu trúc mong muốn
+        const formattedResult = result.rows.map(row => ({
+            id: row.coupon_id,
+            code: row.code,
+            status: row.status,
+            promote: {
+                id: row.promote_id,
+                name: row.name,
+                description: row.description,
+                discount: row.discount,
+                promoteType: row.promoteType,
+                startAt: row.startat,
+                endAt: row.endat,
+            },
+        }));
+
+        res.status(200).json(formattedResult);
     } catch (error) {
         console.error("Error fetching coupons:", error);
         res.status(500).send({ message: "Failed to fetch coupons" });
@@ -925,16 +958,52 @@ app.get("/promote/coupon/list", async (req, res) => {
 app.get("/promote/coupon/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query("SELECT * FROM COUPON WHERE ID = $1", [id]);
+        const result = await pool.query(`
+            SELECT 
+                coupon.id AS coupon_id,
+                coupon.code,
+                coupon.status,
+                promote.id AS promote_id,
+                promote.name,
+                promote.description,
+                promote.discount,
+                promote.promoteType,
+                promote.startAt,
+                promote.endAt
+            FROM COUPON
+            JOIN PROMOTE ON coupon.promoteid = promote.id
+            WHERE coupon.id = $1
+        `, [id]);
+
+        // Kiểm tra nếu không có kết quả
         if (result.rows.length === 0) {
             return res.status(404).send({ message: `Coupon with ID ${id} not found` });
         }
-        res.status(200).json(result.rows[0]);
+
+        // Định dạng kết quả
+        const row = result.rows[0];
+        const formattedResult = {
+            id: row.coupon_id,
+            code: row.code,
+            status: row.status,
+            promote: {
+                id: row.promote_id,
+                name: row.name,
+                description: row.description,
+                discount: row.discount,
+                promoteType: row.promoteType,
+                startAt: row.startat,
+                endAt: row.endat,
+            },
+        };
+
+        res.status(200).json(formattedResult);
     } catch (error) {
         console.error("Error fetching coupon:", error);
         res.status(500).send({ message: "Failed to fetch coupon" });
     }
 });
+
 
 // Tạo một coupon mới
 app.post("/promote/coupon", async (req, res) => {

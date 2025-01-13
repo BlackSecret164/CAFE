@@ -182,12 +182,32 @@ paths:
       summary: Update an existing customer
       description: Update an existing customer by PhoneNumber
       operationId: updateCustomer
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer      
       requestBody:
         description: Update an existent customer in the store
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Customer"
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Le Van A"
+                gender:
+                  type: string
+                  example: "Female"
+                registrationDate:
+                  type: string
+                  format: date-time
+                  example: "2023-12-30 12:00:00"
+                rank:
+                  type: string
+                  example: "Đồng"
         required: true
       responses:
         "200":
@@ -915,12 +935,6 @@ paths:
       responses:
         "200":
           description: A list of coupons
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Coupon"
 
   /promote/coupon/{id}:
     get:
@@ -938,10 +952,6 @@ paths:
       responses:
         "200":
           description: Coupon details
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Coupon"
         "404":
           description: Coupon not found
 
