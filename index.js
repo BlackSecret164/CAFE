@@ -581,6 +581,33 @@ app.delete("/table/:id", async (req, res) => {
     }
 });
 
+app.put("/table/complete/:id", async (req, res) => {
+    const { id } = req.params;
+    const idAsInteger = parseInt(id, 10);
+    const client = await pool.connect();
+
+    try {
+        const query = `
+             UPDATE tables
+             SET status = "Available", phoneorder = null, bookingtime = null, seatingtime = null
+             WHERE id = $1
+         `;
+        const result = await client.query(query, [idAsInteger]);
+
+        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Table ${id} not found" });
+        }
+
+        res.status(200).send({ message: "Table edited successfully!" });
+    } catch (error) {
+        console.error("Error editing table:", error);
+        res.status(500).send({ message: "Failed to edit table" });
+    } finally {
+        client.release();
+    }
+});
+
 //material
 app.get("/material/list", async (req, res) => {
     const client = await pool.connect();
@@ -835,6 +862,60 @@ app.delete("/order/:id", async (req, res) => {
     } catch (error) {
         console.error("Error deleting order:", error);
         res.status(500).send({ message: "Failed to delete order" });
+    } finally {
+        client.release();
+    }
+});
+
+app.put("/order/complete/:id", async (req, res) => {
+    const { id } = req.params;
+    const idAsInteger = parseInt(id, 10);
+    const client = await pool.connect();
+
+    try {
+        const query = `
+             UPDATE order_tb
+             SET status = "Hoàn thành"
+             WHERE id = $1
+         `;
+        const result = await client.query(query, [idAsInteger]);
+
+        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Order ${id} not found" });
+        }
+
+        res.status(200).send({ message: "Order edited successfully!" });
+    } catch (error) {
+        console.error("Error editing order:", error);
+        res.status(500).send({ message: "Failed to edit order" });
+    } finally {
+        client.release();
+    }
+});
+
+app.put("/order/cancel/:id", async (req, res) => {
+    const { id } = req.params;
+    const idAsInteger = parseInt(id, 10);
+    const client = await pool.connect();
+
+    try {
+        const query = `
+             UPDATE order_tb
+             SET status = "Đã hủy"
+             WHERE id = $1
+         `;
+        const result = await client.query(query, [idAsInteger]);
+
+        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Order ${id} not found" });
+        }
+
+        res.status(200).send({ message: "Order edited successfully!" });
+    } catch (error) {
+        console.error("Error editing order:", error);
+        res.status(500).send({ message: "Failed to edit order" });
     } finally {
         client.release();
     }

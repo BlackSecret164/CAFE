@@ -564,7 +564,21 @@ paths:
       responses:
         "204":
           description: Table deleted
-
+  /table/complete/{id}:
+    put:
+      tags:
+        - table
+      summary: Update table availability
+      operationId: updateTableAvailable
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Table availability updated
   /material/list:
     get:
       tags:
@@ -835,7 +849,36 @@ paths:
       responses:
         "204":
           description: Order deleted
-
+  /order/complete/{id}:
+    put:
+      tags:
+        - order
+      summary: Update order complete
+      operationId: updateOrderComplete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order complete updated
+  /order/cancel/{id}:
+    put:
+      tags:
+        - order
+      summary: Update order cancel
+      operationId: updateOrderCancel
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order cancel updated
   /promote/list:
     get:
       tags:
