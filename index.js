@@ -733,6 +733,7 @@ app.post("/order", async (req, res) => {
 
 app.get("/order/:id", async (req, res) => {
     const { id } = req.params;
+    const idAsInteger = parseInt(id, 10);
     const client = await pool.connect();
 
     try {
@@ -767,7 +768,7 @@ app.get("/order/:id", async (req, res) => {
                 order_tb.tableid, 
                 order_tb.orderdate;
         `;
-        const result = await client.query(query, [id]);
+        const result = await client.query(query, [idAsInteger]);
 
         if (result.rowCount === 0) {
             return res.status(404).json({ message: "Order not found" });

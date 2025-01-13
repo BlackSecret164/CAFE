@@ -752,7 +752,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Order"
+                type: array
+                properties:
+                  id:
+                    type: integer
+                  phone:
+                    type: string
+                  serviceType:
+                    type: string
+                  totalPrice:
+                    type: number
+                    format: float
+                  staffName:
+                    type: string
+                  tableID:
+                    type: integer
+                  orderDate:
+                    type: string
+                    format: date
+                  productIDs:
+                    type: array
+                    description: List of product IDs in the order
+                    items:
+                      type: integer
+                  status:
+                    type: string
         "400":
           description: Invalid ID supplied
         "404":
@@ -774,7 +798,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Order"
+              properties:
+                  phone:
+                    type: string
+                  serviceType:
+                    type: string
+                  totalPrice:
+                    type: number
+                    format: float
+                  tableID:
+                    type: integer
+                  orderDate:
+                    type: string
+                    format: date
+                  productIDs:
+                    type: array
+                    description: List of product IDs in the order
+                    items:
+                      type: integer
+                  status:
+                    type: string
       responses:
         "200":
           description: Order updated
