@@ -244,6 +244,7 @@ app.post("/customer", async (req, res) => {
 app.put("/customer/:id", async (req, res) => {
     const { name, gender, registrationDate, rank } = req.body; // Xóa phonecustomer khỏi body
     const { id } = req.params; // Lấy phonecustomer từ URL params
+    console.log("Received ID:", id);
     if (!id || isNaN(Number(id))) {
         return res.status(400).send({ message: "Invalid customer ID" });
     }
