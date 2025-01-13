@@ -184,7 +184,7 @@ paths:
       operationId: updateCustomer
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           schema:
             type: integer      
@@ -1140,7 +1140,6 @@ components:
       properties:
         id:
           type: integer
-          format: int64
           example: 10
         phone:
           type: string
