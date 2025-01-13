@@ -761,7 +761,7 @@ app.get("/order/:id", async (req, res) => {
                 order_tb.id = $1
             GROUP BY 
                 order_tb.id, 
-                order_tb.phone, 
+                order_tb.phonecustomer, 
                 order_tb.servicetype, 
                 order_tb.totalprice, 
                 staff.name, 
