@@ -825,28 +825,48 @@ paths:
     put:
       tags:
         - promote
-      summary: Update an existing promote
-      description: Update an existing promote by promoteid
+      summary: Update an promote
       operationId: updatePromote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
-        description: Update an existent Promote in the store
+        description: Updated promote data
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Promote"
-        required: true
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "New Year Promotion"
+                description:
+                  type: string
+                  example: "Discount for New Year"
+                discount:
+                  type: number
+                  format: float
+                  example: 10
+                promoteType:
+                  type: string
+                  example: "Seasonal"
+                startAt:
+                  type: string
+                  format: date-time
+                  example: "2025-01-01 00:00:00"
+                endAt:
+                  type: string
+                  format: date-time
+                  example: "2025-01-31 23:59:59"
       responses:
         "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Promote"
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Promote"
+          description: promote updated
         "400":
-          description: Invalid ID supplied
+          description: Invalid ID promote
         "404":
           description: Promote not found
         "422":
@@ -855,7 +875,7 @@ paths:
       tags:
         - promote
       summary: Deletes a Promote
-      description: delete a prommote
+      description: delete a promote
       operationId: deletepromote
       parameters:
         - name: id

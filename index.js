@@ -875,15 +875,16 @@ app.post("/promote", async (req, res) => {
 });
 
 app.put("/promote/:id", async (req, res) => {
-    //const { promoteid } = req.params;
-    //const promoteidInt = parseInt(promoteid, 10);
-    const { id, name, description, discount, promoteType, startAt, endAt } = req.body;
+    const { name, description, discount, promoteType, startAt, endAt  } = req.body;
+    const { id } = req.params;
+    const idAsInteger = parseInt(id, 10);
+    const client = await pool.connect();
     try {
         const result = await pool.query(
             `UPDATE PROMOTE 
              SET NAME = $1, DESCRIPTION = $2, DISCOUNT = $3, PROMOTETYPE = $4, STARTAT = $5, ENDAT = $6 
              WHERE ID = $7 RETURNING *`,
-            [name, description, discount, promoteType, startAt, endAt, id]
+            [name, description, discount, promoteType, startAt, endAt, idAsInteger]
         );
         if (result.rowCount === 0) {
             return res.status(404).send({ message: `Promotion with ID ${id} not found` });
