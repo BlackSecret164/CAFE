@@ -128,7 +128,7 @@ app.post("/auth/signin", async (req, res) => {
     }
 });
 
-app.post("/auth/signin", async (req, res) => {
+app.post("/auth/callback", async (req, res) => {
     try {
         // Lấy JWT từ header Authorization
         const authHeader = req.headers.authorization;
