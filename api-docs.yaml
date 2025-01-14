@@ -876,6 +876,37 @@ paths:
       responses:
         "204":
           description: Order deleted
+  /order/new:
+    get:
+      tags:
+        - order
+      summary: Find normal order
+      description: Returns a single order
+      operationId: getOrderNormal
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                properties:
+                  id:
+                    type: integer
+                  phone:
+                    type: string
+                  serviceType:
+                    type: string
+                  tableID:
+                    type: integer
+                  orderDate:
+                    type: string
+                    format: date
+        "400":
+          description: Invalid order
+        "404":
+          description: Order not found
+
   /order/complete/{id}:
     put:
       tags:
