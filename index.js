@@ -116,7 +116,12 @@ app.post("/auth/signin", async (req, res) => {
             { expiresIn: "1h" } // Token hết hạn sau 1 giờ
         );
 
-        res.status(200).json({ message: "Signin successful!", token });
+        res.status(200).json({ message: "Signin successful!", token, user: {
+            id: user.id,
+            name: user.name,
+            phone: user.phone,
+            role: user.role,
+        } });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Internal server error" });
