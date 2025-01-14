@@ -205,9 +205,9 @@ paths:
                   type: string
                   format: date-time
                   example: "2023-12-30 12:00:00"
-                rank:
-                  type: string
-                  example: "Đồng"
+                total:
+                  type: integer
+                  example: 200000
         required: true
       responses:
         "200":
@@ -1306,6 +1306,9 @@ components:
           type: string
           format: date-time
           example: "2023-12-30T12:00:00Z"
+        total:
+          type: integer
+          example: 200000
         rank:
           type: string
           example: "Đồng"

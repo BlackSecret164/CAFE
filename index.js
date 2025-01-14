@@ -245,7 +245,7 @@ app.post("/customer", async (req, res) => {
 });
 
 app.put("/customer/:id", async (req, res) => {
-    const { name, gender, registrationDate, rank } = req.body; // Xóa phonecustomer khỏi body
+    const { name, gender, registrationDate, total } = req.body; // Xóa phonecustomer khỏi body
     const { id } = req.params; // Lấy phonecustomer từ URL params
     console.log("Received ID:", id);
     if (!id || isNaN(Number(id))) {
@@ -256,10 +256,10 @@ app.put("/customer/:id", async (req, res) => {
     try {
         const query = `
             UPDATE customer
-            SET name = $1, gender = $2, registrationdate = $3, rank = $4
+            SET name = $1, gender = $2, registrationdate = $3, total = $4
             WHERE id = $5
         `;
-        const result = await client.query(query, [name, gender, registrationDate, rank, idAsInteger]);
+        const result = await client.query(query, [name, gender, registrationDate, total, idAsInteger]);
 
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
