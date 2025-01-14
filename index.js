@@ -129,6 +129,8 @@ app.put("/staff/:id", async (req, res) => {
     const {id} = req.params;
     const { name, gender, birth, address, phone, workHours, minsalary, typeStaff, startDate } = req.body;
     const idAsInteger = parseInt(id, 10);
+    const workHoursAsInteger = parseInt(workHours, 10);
+    const minsalaryAsInteger = parseInt(minsalary, 10);
     const client = await pool.connect();
     try {
         const query = `
@@ -136,7 +138,7 @@ app.put("/staff/:id", async (req, res) => {
             SET name = $1, gender = $2, birth = $3, address = $4, phone = $5, workhours = $6, minsalary = $7, typestaff = $8, startdate = $9, salary = $6 * $7
             WHERE id = $10
         `;
-        const result = await client.query(query, [name, gender, birth, address, phone, workHours, minsalary, typeStaff, startDate, idAsInteger]);
+        const result = await client.query(query, [name, gender, birth, address, phone, workHoursAsInteger, minsalaryAsInteger, typeStaff, startDate, idAsInteger]);
 
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
