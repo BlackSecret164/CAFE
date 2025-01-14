@@ -275,7 +275,7 @@ app.get("/staff/:id", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const query = "SELECT * FROM staff WHERE id = $1";
+        const query = 'SELECT id, name, gender, birth, address, phone, workhours as "workHours", minsalary, salary, typestaff as "typeStaff", startdate as "startDate", activestatus as "activeStatus", password, role FROM staff WHERE id = $1';
         const result = await client.query(query, [id]);
 
         if (result.rowCount === 0) {
@@ -299,7 +299,7 @@ app.get("/customer/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query("SELECT * FROM customer ORDER BY ID ASC");
+        const result = await client.query(`SELECT id, name, phone, gender, total, registrationdate AS "registrationDate", rank FROM customer ORDER BY ID ASC`);
 
         res.json(result.rows);
     } catch (errors) {
@@ -395,7 +395,7 @@ app.get("/customer/:phone", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const query = "SELECT * FROM customer WHERE phone = $1";
+        const query = 'SELECT id, name, phone, gender, total, registrationdate AS "registrationDate", rank FROM customer WHERE phone = $1';
         const result = await client.query(query, [phone]);
 
         if (result.rowCount === 0) {
@@ -702,7 +702,7 @@ app.get("/material/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query("SELECT * FROM rawmaterial ORDER BY ID ASC");
+        const result = await client.query(`SELECT id, name, quantityimported AS "quantityImported", quantitystock AS "quantityStock", price, storagetype AS "storageType", importdate AS "importDate", expirydate AS "expiryDate" FROM rawmaterial ORDER BY ID ASC`);
 
         res.json(result.rows);
     } catch (errors) {
@@ -765,7 +765,7 @@ app.get("/material/:id", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const query = "SELECT * FROM rawmaterial WHERE id = $1";
+        const query = 'SELECT id, name, quantityimported AS "quantityImported", quantitystock AS "quantityStock", price, storagetype AS "storageType", importdate AS "importDate", expirydate AS "expiryDate" FROM rawmaterial WHERE id = $1';
         const result = await client.query(query, [id]);
 
         if (result.rowCount === 0) {
@@ -1028,7 +1028,7 @@ app.put("/order/cancel/:id", async (req, res) => {
 //promote
 app.get("/promote/list", async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM PROMOTE ORDER BY ID ASC");
+        const result = await pool.query(`SELECT id, name, description, discount, promoteType AS "promoteType", startAt AS "startAt", endAt AS "endAt" FROM PROMOTE ORDER BY ID ASC`);
         res.status(200).json(result.rows);
     } catch (error) {
         console.error("Error fetching promotions:", error);
@@ -1039,7 +1039,7 @@ app.get("/promote/list", async (req, res) => {
 app.get("/promote/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query("SELECT * FROM PROMOTE WHERE ID = $1", [id]);
+        const result = await pool.query(`SELECT id, name, description, discount, promoteType AS "promoteType", startAt AS "startAt", endAt AS "endAt" FROM PROMOTE WHERE ID = $1`, [id]);
         if (result.rows.length === 0) {
             return res.status(404).send({ message: `Promotion with ID ${id} not found` });
         }

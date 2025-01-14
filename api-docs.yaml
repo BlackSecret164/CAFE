@@ -1038,6 +1038,43 @@ paths:
       responses:
         "200":
           description: Order cancel updated
+  /order/detail/{id}:
+    post:
+      tags:
+        - order
+      summary: Add a detail order
+      description: Add a detail order to the store
+      operationId: addOrderDetails
+      requestBody:
+        description: Create a new order details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderID:
+                  type: integer
+                  example: 1
+                productID:
+                  type: integer
+                  example: 1
+                size:
+                  type: string
+                  example: 'S'
+                mood:
+                  type: string
+                  example: 'Nóng'
+                quantity_product:
+                  type: integer
+                  example: 2
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid input
+        "422":
+          description: Validation exception
   /promote/list:
     get:
       tags:
@@ -1515,8 +1552,6 @@ components:
           type: string
         phone:
           type: string
-        workShiftID:
-          type: integer
         workHours:
           type: integer
         minsalary:
@@ -1530,9 +1565,9 @@ components:
           format: date
         activeStatus:
           type: boolean
-        roleID:
-          type: integer
         password:
+          type: string
+        role:
           type: string
     Product:
       type: object
