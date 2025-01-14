@@ -152,7 +152,7 @@ app.get("/auth/callback", async (req, res) => {
 
         // Lưu log hoạt động
         const logQuery = `
-            INSERT INTO activity_logs (id, action, timestamp)
+            INSERT INTO activity_logs (staffid, action, timestamp)
             VALUES ($1, $2, $3)
         `;
         const action = "User accessed callback API";
