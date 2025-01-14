@@ -135,7 +135,7 @@ app.put("/staff/:id", async (req, res) => {
     try {
         const query = `
             UPDATE staff
-            SET name = $1, gender = $2, birth = $3, address = $4, phone = $5, workhours = $6, minsalary = $7, typestaff = $8, startdate = $9, salary = $6 * $7
+            SET name = $1, gender = $2, birth = $3, address = $4, phone = $5, workhours = $6, minsalary = $7, typestaff = $8, startdate = $9
             WHERE id = $10
         `;
         const result = await client.query(query, [name, gender, birth, address, phone, workHoursAsInteger, minsalaryAsInteger, typeStaff, startDate, idAsInteger]);
