@@ -95,54 +95,31 @@ app.post("/file/upload", upload.single("file"), async (req, res) => {
 app.post("/auth/signin", async (req, res) => {
     const { phone, password } = req.body;
 
-    if (!phone || !password) {
-        return res.status(400).send({ message: "Phone and password are required!" });
-    }
-
-    const client = await pool.connect();
     try {
-        // Tìm người dùng theo số điện thoại
-        const query = `SELECT id, name, phone, password, role FROM staff WHERE phone = $1`;
-        const result = await client.query(query, [phone]);
-
+        // Truy vấn người dùng từ cơ sở dữ liệu
+        const result = await pool.query("SELECT * FROM users WHERE phonecustomer = $1", [phone]);
         if (result.rows.length === 0) {
-            return res.status(404).send({ message: "User not found!" });
+            return res.status(401).json({ message: "Phone number not found!" });
         }
 
         const user = result.rows[0];
 
-        // So sánh mật khẩu
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).send({ message: "Invalid password!" });
+        // So sánh mật khẩu trực tiếp
+        if (password !== user.password) {
+            return res.status(401).json({ message: "Invalid password!" });
         }
 
-        // Tạo token JWT
+        // Tạo JWT token
         const token = jwt.sign(
-            {
-                id: user.id,
-                phone: user.phone,
-                role: user.role,
-            },
+            { id: user.id, phone: user.phone },
             JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "1h" } // Token hết hạn sau 1 giờ
         );
 
-        res.status(200).send({
-            message: "Signin successful",
-            token,
-            user: {
-                id: user.id,
-                name: user.name,
-                phone: user.phone,
-                role: user.role,
-            },
-        });
-    } catch (error) {
-        console.error("Error during signin:", error);
-        res.status(500).send({ message: "Internal Server Error" });
-    } finally {
-        client.release();
+        res.status(200).json({ message: "Signin successful!", token });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
     }
 });
 
