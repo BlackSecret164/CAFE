@@ -97,7 +97,7 @@ app.post("/auth/signin", async (req, res) => {
 
     try {
         // Truy vấn người dùng từ cơ sở dữ liệu
-        const result = await pool.query("SELECT * FROM staff WHERE phonecustomer = $1", [phone]);
+        const result = await pool.query("SELECT * FROM staff WHERE phone = $1", [phone]);
         if (result.rows.length === 0) {
             return res.status(401).json({ message: "Phone number not found!" });
         }
