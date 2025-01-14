@@ -847,6 +847,21 @@ app.post("/order", async (req, res) => {
     }
 })
 
+app.get("/order/new", async (req, res)=> {
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query('SELECT id AS "id", phonecustomer AS "phone", servicetype AS "serviceType", tableid AS "tableID", orderdate AS "orderDate" FROM order_tb');
+        res.json(result.rows);
+    } catch (errors) {
+        console.log(errors)
+    } finally {
+        client.release();
+    }
+
+    res.status(404);
+})
+
 app.get("/order/:id", async (req, res) => {
     const { id } = req.params;
     const idAsInteger = parseInt(id, 10);
@@ -955,21 +970,6 @@ app.delete("/order/:id", async (req, res) => {
         client.release();
     }
 });
-
-app.get("/order/new", async (req, res)=> {
-    const client = await pool.connect();
-
-    try {
-        const result = await client.query('SELECT id AS "id", phonecustomer AS "phone", servicetype AS "serviceType", tableid AS "tableID", orderdate AS "orderDate" FROM order_tb');
-        res.json(result.rows);
-    } catch (errors) {
-        console.log(errors)
-    } finally {
-        client.release();
-    }
-
-    res.status(404);
-})
 
 app.put("/order/complete/:id", async (req, res) => {
     const { id } = req.params;
