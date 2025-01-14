@@ -743,15 +743,15 @@ app.get("/order/list", async (req, res) => {
 })
 
 app.post("/order", async (req, res) => {
-    const { phone, serviceType, totalPrice, orderDate, staffID, status } = req.body;
+    const { phone, serviceType, totalPrice, orderDate, staffID, tableID, status } = req.body;
     const client = await pool.connect();
 
     try {
         const query = `
-            INSERT INTO order_tb (phonecustomer, serviceType, totalprice, orderDate, staffID, status)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO order_tb (phonecustomer, serviceType, totalprice, orderDate, staffID, tableID, status)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
-        await client.query(query, [phone, serviceType, totalPrice, orderDate, staffID, status]);
+        await client.query(query, [phone, serviceType, totalPrice, orderDate, staffID, tableID, status]);
         res.status(201).send({ message: "Order added successfully!" });
     } catch (error) {
         console.error("Error adding order:", error);
