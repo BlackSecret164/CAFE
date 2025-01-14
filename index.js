@@ -851,7 +851,7 @@ app.get("/order/new", async (req, res)=> {
     const client = await pool.connect();
 
     try {
-        const result = await client.query('SELECT id AS "id", phonecustomer AS "phone", servicetype AS "serviceType", tableid AS "tableID", orderdate AS "orderDate" FROM order_tb');
+        const result = await client.query('SELECT id AS "id", phonecustomer AS "phone", servicetype AS "serviceType", tableid AS "tableID", orderdate AS "orderDate" FROM order_tb WHERE ID=(SELECT MAX(ID) from order_tb)');
         res.json(result.rows);
     } catch (errors) {
         console.log(errors)
