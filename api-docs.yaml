@@ -322,13 +322,40 @@ paths:
         - staff
       summary: Update an existing staff member
       operationId: updateStaff
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer    
       requestBody:
         description: Updated staff data
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Staff"
+              type: object
+              properties:
+                name:
+                  type: string
+                gender:
+                  type: string
+                birth:
+                  type: string
+                  format: date
+                address:
+                  type: string
+                phone:
+                  type: string
+                workHours:
+                  type: integer
+                minsalary:
+                  type: integer
+                typeStaff:
+                  type: string
+                startDate:
+                  type: string
+                  format: date
       responses:
         "200":
           description: Staff member updated
@@ -1193,12 +1220,28 @@ paths:
       summary: Update an existing membership
       description: Update an existing membership by id
       operationId: updateMembership
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer    
       requestBody:
         description: Update an existent Membership in the store
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Membership"
+              type: object
+              properties:
+                rank:
+                  type: string
+                  example: "Đồng"
+                mprice:
+                  type: integer
+                  example: 200000
+                discount:
+                  type: integer
+                  example: 2000
         required: true
       responses:
         "200":
@@ -1340,6 +1383,8 @@ components:
         workShiftID:
           type: integer
         workHours:
+          type: integer
+        minsalary:
           type: integer
         salary:
           type: integer
