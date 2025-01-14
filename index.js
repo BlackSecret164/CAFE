@@ -10,6 +10,9 @@ const YAML = require("yaml");
 const file = fs.readFileSync("./api-docs.yaml", "utf8");
 const swaggerDocument = YAML.parse(file);
 const cloudinary = require('cloudinary').v2;
+const JWT_SECRET = "your_jwt_secret_key";
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const corsOptions = {
     origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'https://cafe-k5p5.onrender.com'], // Danh sách các origin được phép
@@ -89,12 +92,66 @@ app.post("/file/upload", upload.single("file"), async (req, res) => {
     }
 });
 
+app.post("/auth/signin", async (req, res) => {
+    const { phone, password } = req.body;
+
+    if (!phone || !password) {
+        return res.status(400).send({ message: "Phone and password are required!" });
+    }
+
+    const client = await pool.connect();
+    try {
+        // Tìm người dùng theo số điện thoại
+        const query = `SELECT id, name, phone, password, role FROM staff WHERE phone = $1`;
+        const result = await client.query(query, [phone]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).send({ message: "User not found!" });
+        }
+
+        const user = result.rows[0];
+
+        // So sánh mật khẩu
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).send({ message: "Invalid password!" });
+        }
+
+        // Tạo token JWT
+        const token = jwt.sign(
+            {
+                id: user.id,
+                phone: user.phone,
+                role: user.role,
+            },
+            JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+
+        res.status(200).send({
+            message: "Signin successful",
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                phone: user.phone,
+                role: user.role,
+            },
+        });
+    } catch (error) {
+        console.error("Error during signin:", error);
+        res.status(500).send({ message: "Internal Server Error" });
+    } finally {
+        client.release();
+    }
+});
+
 //staff
 app.get("/staff/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query(`SELECT id, name, gender, birth, address, phone, workhours as "workHours", minsalary, salary, typestaff as "typeStaff", startdate as "startDate", activestatus as "activeStatus", password FROM staff ORDER BY ID ASC`);
+        const result = await client.query(`SELECT id, name, gender, birth, address, phone, workhours as "workHours", minsalary, salary, typestaff as "typeStaff", startdate as "startDate", activestatus as "activeStatus", password, role FROM staff ORDER BY ID ASC`);
 
         res.json(result.rows);
     } catch (errors) {

@@ -19,6 +19,9 @@ tags:
   - name: default
     externalDocs:
       url: http://swagger.io
+  - name: auth
+    externalDocs:
+      url: http://swagger.io  
   - name: customer
     description: Everything about your customer
     externalDocs:
@@ -94,6 +97,84 @@ paths:
           description: Invalid file
         "500":
           description: Internal server error
+  /auth/signin:
+    post:
+      tags:
+        - auth
+      summary: Đăng nhập
+      description: Signin
+      operationId: postSignin
+      requestBody:
+        description: Create a new customer in the store
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phone:
+                  type: string
+                  example: "0981234567"
+                password:
+                  type: string
+                  example: "password123"
+        required: true     
+      responses:
+        "200":
+          description: signin successful
+        "500":
+          description: Internal Server Error
+  /auth/callback:
+    get:
+      tags:
+        - auth
+      summary: Callback
+      description: API trả về thông tin người dùng đã xác thực.
+      operationId: getCallback
+      security:
+        - bearerAuth: []  # JWT Bearer authentication
+      responses:
+        "200":
+          description: Thông tin người dùng đã xác thực.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "ok"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: "johndoe"
+                      phone:
+                        type: string
+                        example: "0981234567"
+                      role:
+                        type: array
+                        items:
+                          type: string
+                        example: ["admin", "user"]
+        "401":
+          description: Unauthorized - JWT không hợp lệ hoặc thiếu.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "500":
+          description: Internal Server Error
   /customer/list:
     get:
       tags:
