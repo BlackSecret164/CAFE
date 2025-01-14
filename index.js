@@ -94,7 +94,7 @@ app.get("/staff/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query("SELECT * FROM staff ORDER BY ID ASC");
+        const result = await client.query("SELECT id, gender, birth, address, phone, workhours as workHours, minsalary, salary, typestaff as typeStaff, startdate as startDate, activestatus as activeStatus, password FROM staff ORDER BY ID ASC");
 
         res.json(result.rows);
     } catch (errors) {
@@ -107,15 +107,15 @@ app.get("/staff/list", async (req, res) => {
 })
 
 app.post("/staff", async (req, res) => {
-    const { name, phone, birth, address, gender, typeStaff, startDate } = req.body;
+    const { name, gender, birth, address, phone, typeStaff, startDate } = req.body;
     const client = await pool.connect();
 
     try {
         const query = `
-            INSERT INTO staff (name, phone, birth, address, gender, typestaff, startdate)
+            INSERT INTO staff (name, gender, birth, address, phone, typestaff, startdate)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
-        await client.query(query, [name, phone, birth, address, gender, typeStaff, startDate]);
+        await client.query(query, [name, gender, birth, address, phone, typeStaff, startDate]);
         res.status(201).send({ message: "Staff added successfully!" });
     } catch (error) {
         console.error("Error adding staff:", error);
