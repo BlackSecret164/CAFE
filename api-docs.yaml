@@ -371,7 +371,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Staff"
+                type: object
+                properties:
+                  name:
+                    type: string
+                  gender:
+                    type: string
+                  birth:
+                    type: string
+                    format: date
+                  address:
+                    type: string
+                  phone:
+                    type: string
+                  workHours:
+                    type: integer
+                  minsalary:
+                    type: integer
+                  typeStaff:
+                    type: string
+                  startDate:
+                    type: string
+                    format: date
         "400":
           description: Invalid input
   /staff/{id}:

@@ -193,15 +193,15 @@ app.get("/staff/list", async (req, res) => {
 })
 
 app.post("/staff", async (req, res) => {
-    const { name, gender, birth, address, phone, typeStaff, startDate } = req.body;
+    const { name, gender, birth, address, phone, workHours, minsalary, typeStaff, startDate } = req.body;
     const client = await pool.connect();
 
     try {
         const query = `
-            INSERT INTO staff (name, gender, birth, address, phone, typestaff, startdate)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO staff (name, gender, birth, address, phone, workHours, minsalary, typestaff, startdate)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         `;
-        await client.query(query, [name, gender, birth, address, phone, typeStaff, startDate]);
+        await client.query(query, [name, gender, birth, address, phone, workHours, minsalary, typeStaff, startDate]);
         res.status(201).send({ message: "Staff added successfully!" });
     } catch (error) {
         console.error("Error adding staff:", error);
