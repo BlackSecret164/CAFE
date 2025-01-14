@@ -56,6 +56,34 @@ const upload = multer({ storage });
 const axios = require("axios");
 const FormData = require("form-data");
 
+function roleGuard(requiredRole) {
+    return (req, res, next) => {
+        const token = req.headers.authorization?.split(" ")[1];
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            req.user = decoded; // Gắn thông tin user vào request
+
+            if (decoded.role !== requiredRole) {
+                return res.status(403).json({ message: "Forbidden: You do not have the required permissions" });
+            }
+            next(); // Cho phép tiếp tục nếu đúng role
+        } catch (error) {
+            return res.status(401).json({ message: "Invalid or expired token" });
+        }
+    };
+}
+
+app.get("/admin", roleGuard("admin"), (req, res) => {
+    res.status(200).json({ message: `Welcome Admin, ${req.user.phone}` });
+});
+
+app.get("/staff", roleGuard("staff"), (req, res) => {
+    res.status(200).json({ message: `Welcome Staff, ${req.user.phone}` });
+});
+
 // API Endpoint để tải lên tệp
 app.post("/file/upload", upload.single("file"), async (req, res) => {
     try {
@@ -96,32 +124,32 @@ app.post("/auth/signin", async (req, res) => {
     const { phone, password } = req.body;
 
     try {
-        // Truy vấn người dùng từ cơ sở dữ liệu
         const result = await pool.query("SELECT * FROM staff WHERE phone = $1", [phone]);
         if (result.rows.length === 0) {
             return res.status(401).json({ message: "Phone number not found!" });
         }
 
         const user = result.rows[0];
-
-        // So sánh mật khẩu trực tiếp
         if (password !== user.password) {
             return res.status(401).json({ message: "Invalid password!" });
         }
 
-        // Tạo JWT token
         const token = jwt.sign(
-            { id: user.id, phone: user.phone },
+            { id: user.id, phone: user.phone, role: user.role }, // Thêm role vào token
             JWT_SECRET,
-            { expiresIn: "1h" } // Token hết hạn sau 1 giờ
+            { expiresIn: "1h" }
         );
 
-        res.status(200).json({ message: "Signin successful!", token, user: {
-            id: user.id,
-            name: user.name,
-            phone: user.phone,
-            role: user.role,
-        } });
+        res.status(200).json({
+            message: "Signin successful!",
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                phone: user.phone,
+                role: user.role,
+            },
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Internal server error" });
