@@ -1191,7 +1191,7 @@ app.put("/membership/:id", async (req, res) => {
     try {
         const query = `
             UPDATE membership
-            SET rank = $1, mpoint = $2, discount = $3
+            SET rank = $1, mprice = $2, discount = $3
             WHERE id = $4
         `;
         const result = await client.query(query, [rank, mprice, discount, idAsInteger]);
