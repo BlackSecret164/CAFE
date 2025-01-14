@@ -94,7 +94,7 @@ app.get("/staff/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query(`SELECT id, gender, birth, address, phone, workhours as "workHours", minsalary, salary, typestaff as "typeStaff", startdate as "startDate", activestatus as "activeStatus", password FROM staff ORDER BY ID ASC`);
+        const result = await client.query(`SELECT id, name, gender, birth, address, phone, workhours as "workHours", minsalary, salary, typestaff as "typeStaff", startdate as "startDate", activestatus as "activeStatus", password FROM staff ORDER BY ID ASC`);
 
         res.json(result.rows);
     } catch (errors) {
