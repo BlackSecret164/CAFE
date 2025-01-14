@@ -128,6 +128,53 @@ app.post("/auth/signin", async (req, res) => {
     }
 });
 
+app.post("/auth/signin", async (req, res) => {
+    try {
+        // Lấy JWT từ header Authorization
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ statusCode: 401, message: "Unauthorized" });
+        }
+
+        const token = authHeader.split(" ")[1];
+
+        // Xác minh và giải mã token
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const staffID = decoded.id;
+
+        // Truy vấn thông tin người dùng từ cơ sở dữ liệu
+        const userResult = await pool.query("SELECT id, name, phone, role FROM staff WHERE id = $1", [staffID]);
+        if (userResult.rows.length === 0) {
+            return res.status(401).json({ statusCode: 401, message: "Unauthorized" });
+        }
+
+        const user = userResult.rows[0];
+
+        // Lưu log hoạt động
+        const logQuery = `
+            INSERT INTO activity_logs (id, action, timestamp)
+            VALUES ($1, $2, $3)
+        `;
+        const action = "User accessed callback API";
+        const timestamp = new Date();
+        await pool.query(logQuery, [user.id, action, timestamp]);
+
+        // Trả về thông tin người dùng
+        return res.status(200).json({
+            msg: "ok",
+            data: {
+                id: user.id,
+                name: user.name,
+                phone: user.phone,
+                role: user.role,
+            },
+        });
+    } catch (error) {
+        console.error("Error in callback:", error);
+        return res.status(500).json({ statusCode: 500, message: "Internal Server Error" });
+    }    
+});
+
 //staff
 app.get("/staff/list", async (req, res) => {
     const client = await pool.connect();

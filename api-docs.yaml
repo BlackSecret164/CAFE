@@ -128,10 +128,10 @@ paths:
       tags:
         - auth
       summary: Callback
-      description: API trả về thông tin người dùng đã xác thực.
+      description: API trả về thông tin người dùng đã xác thực và ghi log hoạt động.
       operationId: getCallback
       security:
-        - bearerAuth: []  # JWT Bearer authentication
+        - bearerAuth: []
       responses:
         "200":
           description: Thông tin người dùng đã xác thực.
@@ -159,7 +159,7 @@ paths:
                         type: array
                         items:
                           type: string
-                        example: ["admin", "user"]
+                        example: ["ROLE_ADMIN", "ROLE_STAFF"]
         "401":
           description: Unauthorized - JWT không hợp lệ hoặc thiếu.
           content:
