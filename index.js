@@ -1494,7 +1494,7 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Đơn hàng và doanh thu trong 30 ngày
-        const [last30DaysOrderValue] = await client.query(`
+        const { rows: [last30DaysOrderValue]} = await client.query(`
         SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
         FROM order_tb
         WHERE orderdate >= NOW() - INTERVAL '30 DAYS'
