@@ -1477,7 +1477,7 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Đơn hàng và doanh thu trong 14 ngày
-        const last14DaysOrder = await client.query(`
+        const { rows: [last14DaysOrder] }  = await client.query(`
         SELECT DATE(orderdate) AS date, COUNT(*) AS amount
         FROM order_tb
         WHERE orderdate >= NOW() - INTERVAL 14 DAY
