@@ -1541,12 +1541,12 @@ app.get('/report/system', async (req, res) => {
         `);
 
         const formattedOverview = {
-            totalPayment: parseInt(overview[0].totalPayment, 10),
-            totalProduct: parseInt(overview[0].totalProduct, 10),
-            totalCustomer: parseInt(overview[0].totalCustomer, 10),
-            totalStaff: parseInt(overview[0].totalStaff, 10),
-            totalOrder: parseInt(overview[0].totalOrder, 10),
-            totalTable: parseInt(overview[0].totalTable, 10),
+            totalPayment: parseInt(overview[0].totalpayment, 10),
+            totalProduct: parseInt(overview[0].totalproduct, 10),
+            totalCustomer: parseInt(overview[0].totalcustomer, 10),
+            totalStaff: parseInt(overview[0].totalstaff, 10),
+            totalOrder: parseInt(overview[0].totalorder, 10),
+            totalTable: parseInt(overview[0].totaltable, 10),
         };
 
         const formattedLast14DaysOrder = last14DaysOrder.map(order => ({
@@ -1575,8 +1575,8 @@ app.get('/report/system', async (req, res) => {
         }, {});
 
         const formattedServiceType = {
-            takeAway: parseInt(serviceType.takeAway, 10),
-            dineIn: parseInt(serviceType.dineIn, 10),
+            takeAway: parseInt(serviceType.takeaway, 10),
+            dineIn: parseInt(serviceType.dinein, 10),
         };
 
         const formattedTopProducts = topProducts.map(product => ({
