@@ -1696,9 +1696,8 @@ components:
           type: string
           example: "Discount for New Year"
         discount:
-          type: number
-          format: float
-          example: 10.5
+          type: integer
+          example: 10
         promoteType:
           type: string
           example: "Seasonal"
