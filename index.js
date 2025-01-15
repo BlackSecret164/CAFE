@@ -588,7 +588,7 @@ app.get("/table/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query(`SELECT id, status, phoneOrder, bookintime AS "bookingTime", seatingtime AS "seatingTime", seat FROM tables ORDER BY ID ASC`);
+        const result = await client.query(`SELECT id, status, phoneOrder, bookingtime AS "bookingTime", seatingtime AS "seatingTime", seat FROM tables ORDER BY ID ASC`);
 
         res.json(result.rows);
     } catch (errors) {
@@ -651,7 +651,7 @@ app.get("/table/:id", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const query = `SELECT id, status, phoneOrder, bookintime AS "bookingTime", seatingtime AS "seatingTime", seat FROM tables WHERE id = $1`;
+        const query = `SELECT id, status, phoneOrder, bookingtime AS "bookingTime", seatingtime AS "seatingTime", seat FROM tables WHERE id = $1`;
         const result = await client.query(query, [id]);
 
         if (result.rowCount === 0) {
