@@ -1466,7 +1466,7 @@ app.get('/report/system', async (req, res) => {
     const client = await pool.connect();
     try {
         // Tổng quan báo cáo
-        const [overview] = await client.query(`
+        const overviewResult = await client.query(`
         SELECT
             (SELECT SUM(totalprice) FROM order_tb) AS totalPayment, 
             (SELECT COUNT(*) FROM product) AS totalProduct,
@@ -1475,6 +1475,7 @@ app.get('/report/system', async (req, res) => {
             (SELECT COUNT(*) FROM order_tb) AS totalOrder,
             (SELECT COUNT(*) FROM tables) AS totalTable
       `);
+        console.log(overviewResult);
 
         // Đơn hàng và doanh thu trong 14 ngày
         const [last14DaysOrder] = await client.query(`
