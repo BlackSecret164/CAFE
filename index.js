@@ -1543,7 +1543,10 @@ app.get('/report/system', async (req, res) => {
             last30DaysOrderValue,
             salesByCategory,
             rankMap: formattedRankMap,
-            serviceType,
+            serviceType: {
+                takeAway: serviceType.takeaway, // Đảm bảo viết thường
+                dineIn: serviceType.dinein      // Đảm bảo viết thường
+            }
         });
     } catch (error) {
         console.error(error);
