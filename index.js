@@ -1462,7 +1462,7 @@ app.delete("/membership/:id", async (req, res) => {
     }
 });
 
-router.get('/report/system', async (req, res) => {
+app.get('/report/system', async (req, res) => {
     const client = await pool.connect();
     try {
         // Tổng quan báo cáo
