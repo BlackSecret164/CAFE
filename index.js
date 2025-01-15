@@ -1527,7 +1527,7 @@ app.get('/report/system', async (req, res) => {
 
         const { rows: topProducts } = await client.query(`
             SELECT 
-              product.name
+              product.name,
               COUNT(order_details.productid) AS amount
             FROM 
               order_details
