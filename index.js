@@ -1477,7 +1477,7 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Đơn hàng và doanh thu trong 14 ngày
-        const { rows: [last14DaysOrder] }  = await client.query(`
+        const { rows: [last14DaysOrder] } = await client.query(`
         SELECT DATE(orderdate) AS date, COUNT(*) AS amount
         FROM order_tb
         WHERE orderdate >= NOW() - INTERVAL '14 DAYS'
@@ -1485,7 +1485,7 @@ app.get('/report/system', async (req, res) => {
         ORDER BY date ASC
       `);
 
-        const { rows: [last14DaysOrderValue]} = await client.query(`
+        const { rows: [last14DaysOrderValue] } = await client.query(`
         SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
         FROM order_tb
         WHERE orderdate >= NOW() - INTERVAL '14 DAYS'
@@ -1494,7 +1494,7 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Đơn hàng và doanh thu trong 30 ngày
-        const { rows: [last30DaysOrderValue]} = await client.query(`
+        const { rows: [last30DaysOrderValue] } = await client.query(`
         SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
         FROM order_tb
         WHERE orderdate >= NOW() - INTERVAL '30 DAYS'
@@ -1503,7 +1503,7 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Số lượng bán ra của các loại nước
-        const { rows: [salesByCategory]} = await client.query(`
+        const { rows: [salesByCategory] } = await client.query(`
         SELECT category AS category, COUNT(*) AS amount
         FROM product
         JOIN order_details ON product.id = order_details.productid
@@ -1511,19 +1511,26 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Xếp hạng khách hàng
-        const { rows: [rankMap]} = await client.query(`
+        const { rows: rankMap } = await client.query(`
         SELECT rank, COUNT(*) AS count
         FROM customer
         GROUP BY rank
       `);
 
         // Thống kê Takeaway / Dine-in
-        const { rows: [serviceType]} = await client.query(`
+        const { rows: [serviceType] } = await client.query(`
         SELECT 
           SUM(CASE WHEN servicetype = 'Take Away' THEN 1 ELSE 0 END) AS takeAway,
           SUM(CASE WHEN servicetype = 'Dine In' THEN 1 ELSE 0 END) AS dineIn
         FROM order_tb
       `);
+
+        const formattedRankMap = Array.isArray(rankMap)
+            ? rankMap.reduce((acc, row) => {
+                acc[row.rank] = row.count;
+                return acc;
+            }, {})
+            : {};
 
         // Tạo phản hồi tổng hợp
         res.json({
@@ -1532,11 +1539,8 @@ app.get('/report/system', async (req, res) => {
             last14DaysOrderValue,
             last30DaysOrderValue,
             salesByCategory,
-            rankMap: rankMap.reduce((acc, row) => {
-                acc[row.rank] = row.count;
-                return acc;
-            }, {}),
-            serviceType: serviceType[0],
+            rankMap: formattedRankMap,
+            serviceType: serviceType || {},
         });
     } catch (error) {
         console.error(error);
