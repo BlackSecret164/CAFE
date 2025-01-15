@@ -1468,7 +1468,7 @@ app.get('/report/system', async (req, res) => {
         // Tổng quan báo cáo
         const [overview] = await client.query(`
         SELECT
-            (SELECT SUM(totalpice) FROM order_tb) AS totalPayment, 
+            (SELECT SUM(totalprice) FROM order_tb) AS totalPayment, 
             (SELECT COUNT(*) FROM product) AS totalProduct,
             (SELECT COUNT(*) FROM customer) AS totalCustomer,
             (SELECT COUNT(*) FROM staff) AS totalStaff,
