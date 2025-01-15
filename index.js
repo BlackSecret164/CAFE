@@ -200,7 +200,7 @@ app.get("/auth/callback", async (req, res) => {
     } catch (error) {
         console.error("Error in callback:", error);
         return res.status(500).json({ statusCode: 500, message: "Internal Server Error" });
-    }    
+    }
 });
 
 //staff
@@ -240,7 +240,7 @@ app.post("/staff", async (req, res) => {
 });
 
 app.put("/staff/:id", async (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
     const { name, gender, birth, address, phone, workHours, minsalary, typeStaff, startDate } = req.body;
     const idAsInteger = parseInt(id, 10);
     const workHoursAsInteger = parseInt(workHours, 10);
@@ -557,31 +557,31 @@ app.get("/product/:id", async (req, res) => {
 app.put("/product/:id/available", async (req, res) => {
     const { available } = req.body; // Lấy "available" từ body
     const { id } = req.params; // Lấy "id" từ URL
-    const idAsInteger = parseInt(id, 10);  
+    const idAsInteger = parseInt(id, 10);
     const client = await pool.connect();
-  
+
     try {
-      // Thực thi câu truy vấn
-      const query = `
+        // Thực thi câu truy vấn
+        const query = `
         UPDATE product
         SET available = $1
         WHERE id = $2
       `;
-      const result = await client.query(query, [available, idAsInteger]);
-  
-      // Kiểm tra nếu không có hàng nào bị ảnh hưởng
-      if (result.rowCount === 0) {
-        return res.status(404).send({ message: `Product ${id} not found` });
-      }
-  
-      res.status(200).send({ message: "Product availability updated successfully!" });
+        const result = await client.query(query, [available, idAsInteger]);
+
+        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: `Product ${id} not found` });
+        }
+
+        res.status(200).send({ message: "Product availability updated successfully!" });
     } catch (error) {
-      console.error("Error updating product availability:", error);
-      res.status(500).send({ message: "Failed to update product availability" });
+        console.error("Error updating product availability:", error);
+        res.status(500).send({ message: "Failed to update product availability" });
     } finally {
-      client.release();
+        client.release();
     }
-  });
+});
 
 //table
 app.get("/table/list", async (req, res) => {
@@ -631,7 +631,9 @@ app.put("/table/:id", async (req, res) => {
             SET status = $1, phoneorder = $2, bookingtime = $3, seatingtime = $4, seat =$5
             WHERE id = $6
         `;
-        const result = await client.query(query, [status, phoneOrder, bookingTime, seatingTime, seat, idAsInteger]);
+        const bookingTimeOrNull = bookingTime ? bookingTime : null;  // Nếu bookingTime là chuỗi rỗng, gán giá trị null
+        const seatingTimeOrNull = seatingTime ? seatingTime : null;  // Tương tự với seatingTime
+        const result = await client.query(query, [status, phoneOrder, bookingTimeOrNull, seatingTimeOrNull, seat, idAsInteger]);
 
         if (result.rowCount === 0) {
             return res.status(404).send({ message: "Table ${id} not found" });
@@ -875,7 +877,7 @@ app.post("/order", async (req, res) => {
     }
 })
 
-app.get("/order/new", async (req, res)=> {
+app.get("/order/new", async (req, res) => {
     const client = await pool.connect();
 
     try {
@@ -1109,7 +1111,7 @@ app.post("/promote", async (req, res) => {
 });
 
 app.put("/promote/:id", async (req, res) => {
-    const { name, description, discount, promoteType, startAt, endAt  } = req.body;
+    const { name, description, discount, promoteType, startAt, endAt } = req.body;
     const { id } = req.params;
     const idAsInteger = parseInt(id, 10);
     const client = await pool.connect();
@@ -1327,7 +1329,7 @@ app.post("/membership", async (req, res) => {
 })
 
 app.put("/membership/:id", async (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
     const { rank, mprice, discount } = req.body;
     const idAsInteger = parseInt(id, 10);
     const client = await pool.connect();
