@@ -1466,81 +1466,79 @@ app.get('/report/system', async (req, res) => {
     const client = await pool.connect();
     try {
         // Tổng quan báo cáo
-        const overview = await client.query(`
-        SELECT
-            (SELECT SUM(totalprice) FROM order_tb) AS totalPayment, 
-            (SELECT COUNT(*) FROM product) AS totalProduct,
-            (SELECT COUNT(*) FROM customer) AS totalCustomer,
-            (SELECT COUNT(*) FROM staff) AS totalStaff,
-            (SELECT COUNT(*) FROM order_tb) AS totalOrder,
-            (SELECT COUNT(*) FROM tables) AS totalTable
-      `);
+        const { rows: [overview] } = await client.query(`
+            SELECT
+                (SELECT SUM(totalprice) FROM order_tb) AS totalPayment, 
+                (SELECT COUNT(*) FROM product) AS totalProduct,
+                (SELECT COUNT(*) FROM customer) AS totalCustomer,
+                (SELECT COUNT(*) FROM staff) AS totalStaff,
+                (SELECT COUNT(*) FROM order_tb) AS totalOrder,
+                (SELECT COUNT(*) FROM tables) AS totalTable
+        `);
 
         // Đơn hàng và doanh thu trong 14 ngày
-        const { rows: [last14DaysOrder] } = await client.query(`
-        SELECT DATE(orderdate) AS date, COUNT(*) AS amount
-        FROM order_tb
-        WHERE orderdate >= NOW() - INTERVAL '14 DAYS'
-        GROUP BY DATE(orderdate)
-        ORDER BY date ASC
-      `);
+        const { rows: last14DaysOrder } = await client.query(`
+            SELECT DATE(orderdate) AS date, COUNT(*) AS amount
+            FROM order_tb
+            WHERE orderdate >= NOW() - INTERVAL '14 DAYS'
+            GROUP BY DATE(orderdate)
+            ORDER BY date ASC
+        `);
 
-        const { rows: [last14DaysOrderValue] } = await client.query(`
-        SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
-        FROM order_tb
-        WHERE orderdate >= NOW() - INTERVAL '14 DAYS'
-        GROUP BY DATE(orderdate)
-        ORDER BY date ASC
-      `);
+        const { rows: last14DaysOrderValue } = await client.query(`
+            SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
+            FROM order_tb
+            WHERE orderdate >= NOW() - INTERVAL '14 DAYS'
+            GROUP BY DATE(orderdate)
+            ORDER BY date ASC
+        `);
 
         // Đơn hàng và doanh thu trong 30 ngày
-        const { rows: [last30DaysOrderValue] } = await client.query(`
-        SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
-        FROM order_tb
-        WHERE orderdate >= NOW() - INTERVAL '30 DAYS'
-        GROUP BY DATE(orderdate)
-        ORDER BY date ASC
-      `);
+        const { rows: last30DaysOrderValue } = await client.query(`
+            SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
+            FROM order_tb
+            WHERE orderdate >= NOW() - INTERVAL '30 DAYS'
+            GROUP BY DATE(orderdate)
+            ORDER BY date ASC
+        `);
 
         // Số lượng bán ra của các loại nước
-        const { rows: [salesByCategory] } = await client.query(`
-        SELECT category AS category, COUNT(*) AS amount
-        FROM product
-        JOIN order_details ON product.id = order_details.productid
-        GROUP BY category
-      `);
+        const { rows: salesByCategory } = await client.query(`
+            SELECT category AS category, COUNT(*) AS amount
+            FROM product
+            JOIN order_details ON product.id = order_details.productid
+            GROUP BY category
+        `);
 
         // Xếp hạng khách hàng
-        const { rows: rankMap } = await client.query(`
-        SELECT rank, COUNT(*) AS count
-        FROM customer
-        GROUP BY rank
-      `);
+        const { rows: rankMap = [] } = await client.query(`
+            SELECT rank, COUNT(*) AS count
+            FROM customer
+            GROUP BY rank
+        `);
 
         // Thống kê Takeaway / Dine-in
-        const { rows: [serviceType] } = await client.query(`
-        SELECT 
-          SUM(CASE WHEN servicetype = 'Take Away' THEN 1 ELSE 0 END) AS takeAway,
-          SUM(CASE WHEN servicetype = 'Dine In' THEN 1 ELSE 0 END) AS dineIn
-        FROM order_tb
-      `);
+        const { rows: [serviceType = {}] } = await client.query(`
+            SELECT 
+              SUM(CASE WHEN servicetype = 'Take Away' THEN 1 ELSE 0 END) AS takeAway,
+              SUM(CASE WHEN servicetype = 'Dine In' THEN 1 ELSE 0 END) AS dineIn
+            FROM order_tb
+        `);
 
-        const formattedRankMap = Array.isArray(rankMap)
-            ? rankMap.reduce((acc, row) => {
-                acc[row.rank] = row.count;
-                return acc;
-            }, {})
-            : {};
+        const formattedRankMap = rankMap.reduce((acc, row) => {
+            acc[row.rank] = row.count;
+            return acc;
+        }, {});
 
         // Tạo phản hồi tổng hợp
         res.json({
-            ...overview[0],
+            ...overview,
             last14DaysOrder,
             last14DaysOrderValue,
             last30DaysOrderValue,
             salesByCategory,
             rankMap: formattedRankMap,
-            serviceType: serviceType || {},
+            serviceType,
         });
     } catch (error) {
         console.error(error);
@@ -1549,6 +1547,7 @@ app.get('/report/system', async (req, res) => {
         client.release();
     }
 });
+
 
 
 app.listen(3000, console.log("Server Running"));
