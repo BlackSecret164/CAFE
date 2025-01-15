@@ -1503,7 +1503,7 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Số lượng bán ra của các loại nước
-        const [salesByCategory] = await client.query(`
+        const { rows: [salesByCategory]} = await client.query(`
         SELECT category AS category, COUNT(*) AS amount
         FROM product
         JOIN order_details ON product.id = order_details.productid
@@ -1511,14 +1511,14 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Xếp hạng khách hàng
-        const [rankMap] = await client.query(`
+        const { rows: [rankMap]} = await client.query(`
         SELECT rank, COUNT(*) AS count
         FROM customer
         GROUP BY rank
       `);
 
         // Thống kê Takeaway / Dine-in
-        const [serviceType] = await client.query(`
+        const { rows: [serviceType]} = await client.query(`
         SELECT 
           SUM(CASE WHEN servicetype = 'Take Away' THEN 1 ELSE 0 END) AS takeAway,
           SUM(CASE WHEN servicetype = 'Dine In' THEN 1 ELSE 0 END) AS dineIn
