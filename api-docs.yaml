@@ -1646,7 +1646,7 @@ paths:
                         description: "Số lượng khách hạng PLATINUM"
                   
                   # Thống kê Takeaway / Dine-in
-                  orderType:
+                  serviceType:
                     type: object
                     properties:
                       takeAway:
@@ -1655,6 +1655,15 @@ paths:
                       dineIn:
                         type: integer
                         description: "Số lượng đơn hàng Dine-in"
+                  topProducts:
+                    type: object
+                    properties:
+                      productName:
+                        type: string
+                        description: Tên sản phẩm.
+                      amount:
+                        type: integer
+                        description: Số lượng bán ra.
 components:
   schemas:
     Customer:

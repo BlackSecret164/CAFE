@@ -1525,6 +1525,21 @@ app.get('/report/system', async (req, res) => {
             FROM order_tb
         `);
 
+        const { rows: topProducts } = await client.query(`
+            SELECT 
+              product.name AS productName, 
+              COUNT(order_details.productid) AS amount
+            FROM 
+              order_details
+            JOIN 
+              product ON product.id = order_details.productid
+            GROUP BY 
+              product.name
+            ORDER BY 
+              amount DESC
+            LIMIT 5
+        `);
+
         const formattedRankMap = rankMap.reduce((acc, row) => {
             acc[row.rank] = row.count;
             return acc;
@@ -1546,7 +1561,8 @@ app.get('/report/system', async (req, res) => {
             serviceType: {
                 takeAway: serviceType.takeaway, // Đảm bảo viết thường
                 dineIn: serviceType.dinein      // Đảm bảo viết thường
-            }
+            },
+            topProducts,
         });
     } catch (error) {
         console.error(error);
