@@ -1466,7 +1466,7 @@ app.get('/report/system', async (req, res) => {
     const client = await pool.connect();
     try {
         // Tổng quan báo cáo
-        const { rows: [overview] } = await client.query(`
+        const { rows: overview } = await client.query(`
             SELECT
                 (SELECT SUM(totalprice) FROM order_tb) AS totalPayment, 
                 (SELECT COUNT(*) FROM product) AS totalProduct,
