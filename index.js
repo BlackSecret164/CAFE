@@ -1480,7 +1480,7 @@ app.get('/report/system', async (req, res) => {
         const { rows: [last14DaysOrder] }  = await client.query(`
         SELECT DATE(orderdate) AS date, COUNT(*) AS amount
         FROM order_tb
-        WHERE orderdate >= NOW() - INTERVAL 14 DAY
+        WHERE orderdate >= NOW() - INTERVAL '14 DAYS'
         GROUP BY DATE(orderdate)
         ORDER BY date ASC
       `);
