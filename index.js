@@ -1485,7 +1485,7 @@ app.get('/report/system', async (req, res) => {
         ORDER BY date ASC
       `);
 
-        const [last14DaysOrderValue] = await client.query(`
+        const { rows: [last14DaysOrderValue]} = await client.query(`
         SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
         FROM order_tb
         WHERE orderdate >= NOW() - INTERVAL '14 DAYS'
