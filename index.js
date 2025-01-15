@@ -358,6 +358,33 @@ app.post("/customer", async (req, res) => {
     }
 });
 
+app.put("/customer/total/:phone", async (req, res) => {
+    const { total } = req.body; 
+    const { phone } = req.params; 
+    console.log("Received phone:", phone);
+    const client = await pool.connect();
+    try {
+        const query = `
+            UPDATE customer
+            SET total = $1
+            WHERE phone = $2
+        `;
+        const result = await client.query(query, [total, phone]);
+
+        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+        if (result.rowCount === 0) {
+            return res.status(404).send({ message: "Customer ${phone} not found" });
+        }
+
+        res.status(200).send({ message: "Customer edited successfully!" });
+    } catch (error) {
+        console.error("Error editing customer:", error);
+        res.status(500).send({ message: "Failed to edit customer" });
+    } finally {
+        client.release();
+    }
+});
+
 app.put("/customer/:id", async (req, res) => {
     const { name, phone, gender, registrationDate, total } = req.body; // Xóa phonecustomer khỏi body
     const { id } = req.params; // Lấy phonecustomer từ URL params
