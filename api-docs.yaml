@@ -226,6 +226,37 @@ paths:
         - cfwfenstore_auth:
             - write:customers
             - read:customers
+  /customer/search:
+    get:
+      tags:
+        - customer
+      summary: Suggestion customer by phoneNumber
+      description: Returns a single customer
+      operationId: getSuggestionPhoneNumber
+      parameters:
+        - name: phone
+          in: path
+          description: phonecustomer of customer to return
+          required: true
+          schema:
+            type: string
+            maxLength: 15
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  phone:
+                    type: string
+                  name:
+                    type: string
+        "400":
+          description: Invalid PhoneNumber supplied
+        "404":
+          description: Customer not found
   /customer/{phone}:
     get:
       tags:

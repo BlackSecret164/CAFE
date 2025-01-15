@@ -418,6 +418,34 @@ app.delete("/customer/:id", async (req, res) => {
     }
 });
 
+app.get("/customer/search", async (req, res) => {
+    const { phone } = req.query; // Nhận số điện thoại từ query string
+    const client = await pool.connect();
+
+    try {
+        const query = `
+            SELECT name, phone
+            FROM customer 
+            WHERE phone LIKE $1
+            LIMIT 10`;  // Giới hạn số kết quả trả về để tránh load quá nhiều
+
+        // Thêm dấu "%" ở hai đầu để tìm kiếm số điện thoại chứa chuỗi đã nhập ở bất kỳ đâu
+        const result = await client.query(query, [`%${phone}%`]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "No customers found" });
+        }
+
+        // Trả về danh sách khách hàng khớp với phần số điện thoại nhập vào
+        res.json(result.rows);
+    } catch (error) {
+        console.error("Error fetching customers:", error);
+        res.status(500).json({ message: "Failed to fetch customers" });
+    } finally {
+        client.release();
+    }
+});
+
 app.get("/customer/:phone", async (req, res) => {
     const { phone } = req.params;
     const client = await pool.connect();
