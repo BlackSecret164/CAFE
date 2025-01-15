@@ -1540,29 +1540,60 @@ app.get('/report/system', async (req, res) => {
             LIMIT 5
         `);
 
+        const formattedOverview = {
+            totalPayment: parseInt(overview[0].totalPayment, 10),
+            totalProduct: parseInt(overview[0].totalProduct, 10),
+            totalCustomer: parseInt(overview[0].totalCustomer, 10),
+            totalStaff: parseInt(overview[0].totalStaff, 10),
+            totalOrder: parseInt(overview[0].totalOrder, 10),
+            totalTable: parseInt(overview[0].totalTable, 10),
+        };
+
+        const formattedLast14DaysOrder = last14DaysOrder.map(order => ({
+            date: order.date,
+            amount: parseInt(order.amount, 10),
+        }));
+
+        const formattedLast14DaysOrderValue = last14DaysOrderValue.map(order => ({
+            date: order.date,
+            amount: parseInt(order.amount), // Nếu giá trị là tiền, dùng parseFloat
+        }));
+
+        const formattedLast30DaysOrderValue = last30DaysOrderValue.map(order => ({
+            date: order.date,
+            amount: parseInt(order.amount), // Nếu giá trị là tiền, dùng parseFloat
+        }));
+
+        const formattedSalesByCategory = salesByCategory.map(item => ({
+            category: item.category,
+            amount: parseInt(item.amount, 10),
+        }));
+
         const formattedRankMap = rankMap.reduce((acc, row) => {
-            acc[row.rank] = row.count;
+            acc[row.rank] = parseInt(row.count, 10); // Đảm bảo giá trị là số nguyên
             return acc;
         }, {});
 
+        const formattedServiceType = {
+            takeAway: parseInt(serviceType.takeAway, 10),
+            dineIn: parseInt(serviceType.dineIn, 10),
+        };
+
+        const formattedTopProducts = topProducts.map(product => ({
+            name: product.name,
+            amount: parseInt(product.amount, 10)  // Đảm bảo 'amount' là số nguyên
+        }));
+
         // Tạo phản hồi tổng hợp
         res.json({
-            totalPayment: overview.totalpayment,
-            totalProduct: overview.totalproduct,
-            totalCustomer: overview.totalcustomer,
-            totalStaff: overview.totalstaff,
-            totalOrder: overview.totalorder,
-            totalTable: overview.totaltable,
-            last14DaysOrder,
-            last14DaysOrderValue,
-            last30DaysOrderValue,
-            salesByCategory,
+            ...formattedOverview,
+            last14DaysOrder: formattedLast14DaysOrder,
+            last14DaysOrderValue: formattedLast14DaysOrderValue,
+            last30DaysOrderValue: formattedLast30DaysOrderValue,
+            salesByCategory: formattedSalesByCategory,
             rankMap: formattedRankMap,
-            serviceType: {
-                takeAway: serviceType.takeaway, // Đảm bảo viết thường
-                dineIn: serviceType.dinein      // Đảm bảo viết thường
-            },
-            topProducts,
+            serviceType: formattedServiceType,
+            topProducts: formattedTopProducts,
         });
     } catch (error) {
         console.error(error);
