@@ -1466,7 +1466,7 @@ app.get('/report/system', async (req, res) => {
     const client = await pool.connect();
     try {
         // Tổng quan báo cáo
-        const overviewResult = await client.query(`
+        const overview = await client.query(`
         SELECT
             (SELECT SUM(totalprice) FROM order_tb) AS totalPayment, 
             (SELECT COUNT(*) FROM product) AS totalProduct,
@@ -1475,10 +1475,9 @@ app.get('/report/system', async (req, res) => {
             (SELECT COUNT(*) FROM order_tb) AS totalOrder,
             (SELECT COUNT(*) FROM tables) AS totalTable
       `);
-        console.log(overviewResult);
 
         // Đơn hàng và doanh thu trong 14 ngày
-        const [last14DaysOrder] = await client.query(`
+        const last14DaysOrder = await client.query(`
         SELECT DATE(orderdate) AS date, COUNT(*) AS amount
         FROM order_tb
         WHERE orderdate >= NOW() - INTERVAL 14 DAY
@@ -1486,7 +1485,7 @@ app.get('/report/system', async (req, res) => {
         ORDER BY date ASC
       `);
 
-        const [last14DaysOrderValue] = await client.query(`
+        const last14DaysOrderValue = await client.query(`
         SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
         FROM order_tb
         WHERE orderdate >= NOW() - INTERVAL 14 DAY
@@ -1495,7 +1494,7 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Đơn hàng và doanh thu trong 30 ngày
-        const [last30DaysOrderValue] = await client.query(`
+        const last30DaysOrderValue = await client.query(`
         SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
         FROM order_tb
         WHERE orderdate >= NOW() - INTERVAL 30 DAY
@@ -1504,7 +1503,7 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Số lượng bán ra của các loại nước
-        const [salesByCategory] = await client.query(`
+        const salesByCategory = await client.query(`
         SELECT category AS category, COUNT(*) AS amount
         FROM product
         JOIN order_details ON product.id = order_details.productid
@@ -1512,14 +1511,14 @@ app.get('/report/system', async (req, res) => {
       `);
 
         // Xếp hạng khách hàng
-        const [rankMap] = await client.query(`
+        const rankMap = await client.query(`
         SELECT rank, COUNT(*) AS count
         FROM customer
         GROUP BY rank
       `);
 
         // Thống kê Takeaway / Dine-in
-        const [serviceType] = await client.query(`
+        const serviceType = await client.query(`
         SELECT 
           SUM(CASE WHEN servicetype = 'Take Away' THEN 1 ELSE 0 END) AS takeAway,
           SUM(CASE WHEN servicetype = 'Dine In' THEN 1 ELSE 0 END) AS dineIn
