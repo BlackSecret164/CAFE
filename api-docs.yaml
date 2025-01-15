@@ -62,7 +62,11 @@ tags:
     externalDocs:
       description: Find out more about membership
       url: http://swagger.io
-
+  - name: report
+    description: Report
+    externalDocs:
+      description: Report system
+      url: http://swagger.io
 paths:
   /file/upload:
     post:
@@ -1543,7 +1547,114 @@ paths:
         - cfwfenstore_auth:
             - write:memberships
             - read:memberships
+  /report/system:
+    get:
+      tags:
+        - report
+      summary: "Báo cáo tổng hợp hệ thống"
+      description: "Lấy thông tin tổng quan về doanh thu, đơn hàng, khách hàng, nhân viên và các thông tin khác."
+      responses:
+        '200':
+          description: "Thông tin báo cáo tổng hợp"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  # Tổng quan báo cáo
+                  totalPayment:
+                    type: integer
+                  totalProduct:
+                    type: integer
+                  totalCustomer:
+                    type: integer
+                  totalStaff:
+                    type: integer
+                  totalOrder:
+                    type: integer
+                  totalTable:
+                    type: integer
+                  
+                  # Số lượng đơn hàng và doanh thu trong 14 ngày
+                  last14DaysOrder:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date-time
+                          description: "Ngày"
+                        amount:
+                          type: integer
+                          description: "Số lượng đơn hàng"
+                  last14DaysOrderValue:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date-time
+                          description: "Ngày"
+                        amount:
+                          type: integer
+                          description: "Doanh thu"
+                  
+                  # Số lượng đơn hàng và doanh thu trong 30 ngày
+                  last30DaysOrderValue:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date-time
+                          description: "Ngày"
+                        amount:
+                          type: integer
+                          description: "Doanh thu"
 
+                  # Số lượng bán ra của các loại nước
+                  salesByCategory:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category:
+                          type: string
+                          description: "Tên loại nước"
+                        amount:
+                          type: integer
+                          description: "Số lượng bán ra"
+
+                  # Xếp hạng khách hàng
+                  rankMap:
+                    type: object
+                    properties:
+                      BRONZE:
+                        type: integer
+                        description: "Số lượng khách hạng BRONZE"
+                      SILVER:
+                        type: integer
+                        description: "Số lượng khách hạng SILVER"
+                      GOLD:
+                        type: integer
+                        description: "Số lượng khách hạng GOLD"
+                      PLATINUM:
+                        type: integer
+                        description: "Số lượng khách hạng PLATINUM"
+                  
+                  # Thống kê Takeaway / Dine-in
+                  orderType:
+                    type: object
+                    properties:
+                      takeAway:
+                        type: integer
+                        description: "Số lượng đơn hàng Takeaway"
+                      dineIn:
+                        type: integer
+                        description: "Số lượng đơn hàng Dine-in"
 components:
   schemas:
     Customer:
@@ -1793,6 +1904,69 @@ components:
         promoteId:
           type: integer
           example: 1
+    Report:
+      type: object
+      properties:
+        totalPayment:
+          type: integer
+        totalProduct:
+          type: integer
+        totalCustomer:
+          type: integer
+        totalStaff:
+          type: integer
+        totalOrder:
+          type: integer
+        totalTable:
+          type: integer
+    Last14DaysOrder:
+      type: array
+      items:
+        type: object
+        properties:
+          date:
+            type: string
+            format: date-time
+          amount:
+            type: integer
+    Last14DaysOrderValue:
+      type: array
+      items:
+        type: object
+        properties:
+          date:
+            type: string
+            format: date-time
+          amount:
+            type: integer
+    SalesByCategory:
+      type: array
+      items:
+        type: object
+        properties:
+          category:
+            type: string
+          amount:
+            type: integer
+    RankMap:
+      type: object
+      properties:
+        BRONZE:
+          type: integer
+        SILVER:
+          type: integer
+        GOLD:
+          type: integer
+        PLATINUM:
+          type: integer
+    SerciveType:
+      type: object
+      properties:
+        takeAway:
+          type: integer
+        dineIn:
+          type: integer
+
     Membership:
       type: object
       properties:

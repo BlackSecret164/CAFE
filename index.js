@@ -359,8 +359,8 @@ app.post("/customer", async (req, res) => {
 });
 
 app.put("/customer/total/:phone", async (req, res) => {
-    const { total } = req.body; 
-    const { phone } = req.params; 
+    const { total } = req.body;
+    const { phone } = req.params;
     console.log("Received phone:", phone);
     const client = await pool.connect();
     try {
@@ -1457,6 +1457,90 @@ app.delete("/membership/:id", async (req, res) => {
     } catch (error) {
         console.error("Error deleting membership:", error);
         res.status(500).send({ message: "Failed to delete membership" });
+    } finally {
+        client.release();
+    }
+});
+
+router.get('/report/system', async (req, res) => {
+    const client = await pool.connect();
+    try {
+        // Tổng quan báo cáo
+        const [overview] = await client.query(`
+        SELECT
+            (SELECT SUM(totalpice) FROM order_tb) AS totalPayment, 
+            (SELECT COUNT(*) FROM product) AS totalProduct,
+            (SELECT COUNT(*) FROM customer) AS totalCustomer,
+            (SELECT COUNT(*) FROM staff) AS totalStaff,
+            (SELECT COUNT(*) FROM order_tb) AS totalOrder,
+            (SELECT COUNT(*) FROM tables) AS totalTable
+      `);
+
+        // Đơn hàng và doanh thu trong 14 ngày
+        const [last14DaysOrder] = await client.query(`
+        SELECT DATE(orderdate) AS date, COUNT(*) AS amount
+        FROM order_tb
+        WHERE orderdate >= NOW() - INTERVAL 14 DAY
+        GROUP BY DATE(orderdate)
+        ORDER BY date ASC
+      `);
+
+        const [last14DaysOrderValue] = await client.query(`
+        SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
+        FROM order_tb
+        WHERE orderdate >= NOW() - INTERVAL 14 DAY
+        GROUP BY DATE(orderdate)
+        ORDER BY date ASC
+      `);
+
+        // Đơn hàng và doanh thu trong 30 ngày
+        const [last30DaysOrderValue] = await client.query(`
+        SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
+        FROM order_tb
+        WHERE orderdate >= NOW() - INTERVAL 30 DAY
+        GROUP BY DATE(orderdate)
+        ORDER BY date ASC
+      `);
+
+        // Số lượng bán ra của các loại nước
+        const [salesByCategory] = await client.query(`
+        SELECT category AS category, COUNT(*) AS amount
+        FROM product
+        JOIN order_details ON product.id = order_details.productid
+        GROUP BY category
+      `);
+
+        // Xếp hạng khách hàng
+        const [rankMap] = await client.query(`
+        SELECT rank, COUNT(*) AS count
+        FROM customer
+        GROUP BY rank
+      `);
+
+        // Thống kê Takeaway / Dine-in
+        const [serviceType] = await client.query(`
+        SELECT 
+          SUM(CASE WHEN servicetype = 'Take Away' THEN 1 ELSE 0 END) AS takeAway,
+          SUM(CASE WHEN servicetype = 'Dine In' THEN 1 ELSE 0 END) AS dineIn
+        FROM order_tb
+      `);
+
+        // Tạo phản hồi tổng hợp
+        res.json({
+            ...overview[0],
+            last14DaysOrder,
+            last14DaysOrderValue,
+            last30DaysOrderValue,
+            salesByCategory,
+            rankMap: rankMap.reduce((acc, row) => {
+                acc[row.rank] = row.count;
+                return acc;
+            }, {}),
+            serviceType: serviceType[0],
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Có lỗi xảy ra khi lấy báo cáo hệ thống.' });
     } finally {
         client.release();
     }
