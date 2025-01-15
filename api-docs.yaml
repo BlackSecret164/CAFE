@@ -280,6 +280,9 @@ paths:
                 name:
                   type: string
                   example: "Le Van A"
+                phone:
+                  type: string
+                  example: "0981234567"
                 gender:
                   type: string
                   example: "Female"

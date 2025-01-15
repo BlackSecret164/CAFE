@@ -359,7 +359,7 @@ app.post("/customer", async (req, res) => {
 });
 
 app.put("/customer/:id", async (req, res) => {
-    const { name, gender, registrationDate, total } = req.body; // Xóa phonecustomer khỏi body
+    const { name, phone, gender, registrationDate, total } = req.body; // Xóa phonecustomer khỏi body
     const { id } = req.params; // Lấy phonecustomer từ URL params
     console.log("Received ID:", id);
     if (!id || isNaN(Number(id))) {
@@ -370,10 +370,10 @@ app.put("/customer/:id", async (req, res) => {
     try {
         const query = `
             UPDATE customer
-            SET name = $1, gender = $2, registrationdate = $3, total = $4
-            WHERE id = $5
+            SET name = $1, phone =$2, gender = $3, registrationdate = $4, total = $5
+            WHERE id = $6
         `;
-        const result = await client.query(query, [name, gender, registrationDate, total, idAsInteger]);
+        const result = await client.query(query, [name, phone, gender, registrationDate, total, idAsInteger]);
 
         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
@@ -1050,6 +1050,21 @@ app.put("/order/cancel/:id", async (req, res) => {
         res.status(500).send({ message: "Failed to edit order" });
     } finally {
         client.release();
+    }
+});
+
+app.post("/order/detail/:id", async (req, res) => {
+    const { orderID, productID, size, mood, quantity_product } = req.body;
+    try {
+        const result = await pool.query(
+            `INSERT INTO ORDER_DETAILS (orderID, productID, size, mood, quantity_product) 
+             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+            [orderID, productID, size, mood, quantity_product]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error creating detail:", error);
+        res.status(500).send({ message: "Failed to create details" });
     }
 });
 
