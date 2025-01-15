@@ -300,7 +300,27 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Customer"
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "Le Van A"
+                  phone:
+                    type: string
+                    example: "0981234567"
+                  gender:
+                    type: string
+                    example: "Female"
+                  registrationDate:
+                    type: string
+                    format: date-time
+                    example: "2023-12-30 12:00:00"
+                  total:
+                    type: integer
+                    example: 200000
             application/xml:
               schema:
                 $ref: "#/components/schemas/Customer"
