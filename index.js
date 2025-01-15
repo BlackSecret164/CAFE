@@ -1532,7 +1532,12 @@ app.get('/report/system', async (req, res) => {
 
         // Tạo phản hồi tổng hợp
         res.json({
-            ...overview,
+            totalPayment: overview.totalpayment,
+            totalProduct: overview.totalproduct,
+            totalCustomer: overview.totalcustomer,
+            totalStaff: overview.totalstaff,
+            totalOrder: overview.totalorder,
+            totalTable: overview.totaltable,
             last14DaysOrder,
             last14DaysOrderValue,
             last30DaysOrderValue,
