@@ -545,21 +545,21 @@ app.get("/product/list", async (req, res) => {
 // });
 
 app.post("/product", async (req, res) => {
-    const { name, price, upsize, imageURL, category } = req.body;
+    const { name, price, upsize, image, category } = req.body;
     const client = await pool.connect();
 
     console.log("Payload received for creating product:", req.body);
 
-    if (!name || !price || !imageURL || !category) {
+    if (!name || !price || !image || !category) {
         return res.status(400).json({ message: "Missing required fields" });
     }
 
     try {
         const query = `
-            INSERT INTO product (name, price, upsize, imageURL, category)
+            INSERT INTO product (name, price, upsize, image, category)
             VALUES ($1, $2, $3, $4, $5)
         `;
-        await client.query(query, [name, price, upsize, imageURL, category]);
+        await client.query(query, [name, price, upsize, image, category]);
         res.status(201).send({ message: "Product added successfully!" });
     } catch (error) {
         console.error("Error adding product:", error);
@@ -598,24 +598,24 @@ app.post("/product", async (req, res) => {
 // });
 
 app.put("/product/:id", async (req, res) => {
-    const { name, price, upsize, imageURL, category } = req.body;
+    const { name, price, upsize, image, category } = req.body;
     const { id } = req.params;
     const idAsInteger = parseInt(id, 10);
     const client = await pool.connect();
 
     console.log("Payload received for editing product:", req.body);
 
-    if (!name || !price || !imageURL || !category) {
+    if (!name || !price || !image || !category) {
         return res.status(400).json({ message: "Missing required fields" });
     }
 
     try {
         const query = `
             UPDATE product
-            SET name = $1, price = $2, upsize = $3, imageURL = $4, category =$5
+            SET name = $1, price = $2, upsize = $3, image = $4, category =$5
             WHERE id = $6
         `;
-        const result = await client.query(query, [name, price, upsize, imageURL, category, idAsInteger]);
+        const result = await client.query(query, [name, price, upsize, image, category, idAsInteger]);
 
         if (result.rowCount === 0) {
             return res.status(404).send({ message: `Product ${id} not found` });

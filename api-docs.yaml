@@ -629,7 +629,7 @@ paths:
                   type: integer
                 category:
                   type: string
-                imageURL:
+                image:
                   type: string
       responses:
         "200":
@@ -647,7 +647,7 @@ paths:
                     type: integer
                   category:
                     type: string
-                  imageURL:
+                  image:
                     type: string
         "400":
           description: Invalid input
@@ -692,7 +692,7 @@ paths:
                   type: integer
                 category:
                   type: string
-                imageURL:
+                image:
                   type: string
       responses:
         "200":
@@ -1859,7 +1859,7 @@ components:
           type: boolean
         category:
           type: string
-        imageURL:
+        image:
           type: string
         hot:
           type: boolean
