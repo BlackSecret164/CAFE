@@ -679,7 +679,7 @@ app.get("/product/:id", async (req, res) => {
     }
 });
 
-app.put("/product/:id/available", async (req, res) => {
+app.put("/product/available/:id", async (req, res) => {
     const { available } = req.body; // Lấy "available" từ body
     const { id } = req.params; // Lấy "id" từ URL
     const idAsInteger = parseInt(id, 10);

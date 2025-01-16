@@ -711,7 +711,7 @@ paths:
       responses:
         "204":
           description: Product deleted
-  /product/{id}/available:
+  /product/available/{id}:
     put:
       tags:
         - product
