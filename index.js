@@ -87,36 +87,42 @@ app.get("/staff", roleGuard("staff"), (req, res) => {
 // API Endpoint để tải lên tệp
 app.post("/file/upload", upload.single("file"), async (req, res) => {
     try {
-        const file = req.file; // Lấy file từ request
+        const file = req.file;
         if (!file) {
             return res.status(400).json({ message: "No file uploaded" });
         }
 
-        // Tạo FormData để gửi lên Cloudinary
+        // Kiểm tra định dạng file (chỉ nhận file bắt đầu bằng image/)
+        if (!file.mimetype.startsWith("image/")) {
+            return res.status(400).json({ message: "Invalid file type. Only images are allowed." });
+        }
+
+        // Gửi file đến Cloudinary
         const formData = new FormData();
         formData.append("file", file.buffer, file.originalname); // Tệp từ buffer
-        formData.append("upload_preset", "upload-coffeewfen"); // Tên upload preset
-        formData.append("folder", "doan"); // Thư mục chỉ định (nếu cần)
+        formData.append("upload_preset", "upload-coffeewfen"); // Tên upload preset Cloudinary
+        formData.append("folder", "doan"); // Thư mục Cloudinary (nếu cần)
 
-        // Gửi yêu cầu POST đến Cloudinary
-        const cloudinaryResponse = await axios.post(
+        const response = await axios.post(
             "https://api.cloudinary.com/v1_1/dkntmdcja/image/upload",
             formData,
             {
                 headers: {
-                    ...formData.getHeaders(), // Header của FormData
+                    ...formData.getHeaders(), // Headers của FormData
                 },
             }
         );
 
-        // Trả về URL của ảnh đã upload
         res.status(201).json({
             message: "File uploaded successfully",
-            imageUrl: cloudinaryResponse.data.secure_url, // URL ảnh
+            imageUrl: response.data.secure_url, // URL của file trên Cloudinary
         });
     } catch (error) {
-        console.error("Error uploading file:", error.response ? error.response.data : error.message);
-        res.status(500).json({ message: "Failed to upload file", error: error.response ? error.response.data : error.message });
+        console.error("Error uploading file:", error.message);
+        res.status(500).json({
+            message: "Failed to upload file",
+            error: error.response ? error.response.data : error.message,
+        });
     }
 });
 
