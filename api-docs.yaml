@@ -620,14 +620,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Product"
+              properties:
+                name:
+                  type: string
+                price:
+                  type: integer
+                upsize:
+                  type: integer
+                category:
+                  type: string
+                imageURL:
+                  type: string
       responses:
         "200":
           description: Product added successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Product"
+                type: object
+                properties:
+                  name:
+                    type: string
+                  price:
+                    type: integer
+                  upsize:
+                    type: integer
+                  category:
+                    type: string
+                  imageURL:
+                    type: string
         "400":
           description: Invalid input
   /product/{id}:
@@ -662,7 +683,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Product"
+              properties:
+                name:
+                  type: string
+                price:
+                  type: integer
+                upsize:
+                  type: integer
+                category:
+                  type: string
+                imageURL:
+                  type: string
       responses:
         "200":
           description: Product updated
