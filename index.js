@@ -171,7 +171,7 @@ app.get("/auth/callback", async (req, res) => {
         const staffID = decoded.id;
 
         // Truy vấn thông tin người dùng từ cơ sở dữ liệu
-        const userResult = await pool.query("SELECT id, name, phone, role FROM staff WHERE id = $1", [staffID]);
+        const userResult = await pool.query(`SELECT id, name, gender, birth, address, phone, workhours as "workHours", minsalary, typestaff as "typeStaff", role FROM staff WHERE id = $1`, [staffID]);
         if (userResult.rows.length === 0) {
             return res.status(401).json({ statusCode: 401, message: "Unauthorized" });
         }
@@ -194,6 +194,12 @@ app.get("/auth/callback", async (req, res) => {
                 id: user.id,
                 name: user.name,
                 phone: user.phone,
+                gender: user.gender,
+                birth: user.birth,
+                address: user.address,
+                typeStaff: user.typeStaff,
+                minsalary: user.minsalary,
+                workHours: user.workHours,
                 role: user.role,
             },
         });

@@ -160,6 +160,23 @@ paths:
                       phone:
                         type: string
                         example: "0981234567"
+                      gender:
+                        type: string
+                        example: "Nam"
+                      birth:
+                        type: string
+                        format: date
+                        example: "2004-12-30"
+                      address:
+                        type: string
+                        example: "An Giang"
+                      typeStaff:
+                        type: string
+                        example: "Thu ngân"
+                      minsalary:
+                        type: integer
+                      workHours:
+                        type: integer
                       role:
                         type: array
                         items:
