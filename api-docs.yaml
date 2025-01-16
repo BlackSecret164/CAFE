@@ -1876,6 +1876,8 @@ components:
           type: string
         phoneOrder:
           type: string
+        name:
+          type: string
         bookingTime:
           type: string
           format: date-time

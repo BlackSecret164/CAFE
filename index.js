@@ -713,7 +713,7 @@ app.get("/table/list", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const result = await client.query(`SELECT id, status, phoneOrder AS "phoneOrder", bookingtime AS "bookingTime", seatingtime AS "seatingTime", seat FROM tables ORDER BY ID ASC`);
+        const result = await client.query(`SELECT id, status, phoneOrder AS "phoneOrder", name, bookingtime AS "bookingTime", seatingtime AS "seatingTime", seat FROM tables ORDER BY ID ASC`);
 
         res.json(result.rows);
     } catch (errors) {
@@ -745,7 +745,7 @@ app.post("/table", async (req, res) => {
 })
 
 app.put("/table/:id", async (req, res) => {
-    const { status, phoneOrder, bookingTime, seatingTime, seat } = req.body;
+    const { status, phoneOrder, name, bookingTime, seatingTime, seat } = req.body;
     const { id } = req.params;
     const idAsInteger = parseInt(id, 10);
     const client = await pool.connect();
@@ -753,12 +753,12 @@ app.put("/table/:id", async (req, res) => {
     try {
         const query = `
             UPDATE tables
-            SET status = $1, phoneorder = $2, bookingtime = $3, seatingtime = $4, seat =$5
-            WHERE id = $6
+            SET status = $1, phoneorder = $2, name = $3, bookingtime = $4, seatingtime = $5, seat =$6
+            WHERE id = $7
         `;
         const bookingTimeOrNull = bookingTime ? bookingTime : null;  // Nếu bookingTime là chuỗi rỗng, gán giá trị null
         const seatingTimeOrNull = seatingTime ? seatingTime : null;  // Tương tự với seatingTime
-        const result = await client.query(query, [status, phoneOrder, bookingTimeOrNull, seatingTimeOrNull, seat, idAsInteger]);
+        const result = await client.query(query, [status, phoneOrder, name, bookingTimeOrNull, seatingTimeOrNull, seat, idAsInteger]);
 
         if (result.rowCount === 0) {
             return res.status(404).send({ message: "Table ${id} not found" });
@@ -778,7 +778,7 @@ app.get("/table/:id", async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const query = `SELECT id, status, phoneOrder AS "phoneOrder", bookingtime AS "bookingTime", seatingtime AS "seatingTime", seat FROM tables WHERE id = $1`;
+        const query = `SELECT id, status, phoneOrder AS "phoneOrder", name, bookingtime AS "bookingTime", seatingtime AS "seatingTime", seat FROM tables WHERE id = $1`;
         const result = await client.query(query, [id]);
 
         if (result.rowCount === 0) {
@@ -833,7 +833,7 @@ app.put("/table/complete/:id", async (req, res) => {
     try {
         const query = `
              UPDATE tables
-             SET status = 'Available', phoneorder = null, bookingtime = null, seatingtime = null
+             SET status = 'Available', phoneorder = null, name = null, bookingtime = null, seatingtime = null
              WHERE id = $1
          `;
         const result = await client.query(query, [idAsInteger]);
