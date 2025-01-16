@@ -1494,6 +1494,14 @@ app.get('/report/system', async (req, res) => {
         `);
 
         // Đơn hàng và doanh thu trong 30 ngày
+        const { rows: last30DaysOrder } = await client.query(`
+            SELECT DATE(orderdate) AS date, COUNT(*) AS amount
+            FROM order_tb
+            WHERE orderdate >= NOW() - INTERVAL '30 DAYS'
+            GROUP BY DATE(orderdate)
+            ORDER BY date ASC
+        `);
+
         const { rows: last30DaysOrderValue } = await client.query(`
             SELECT DATE(orderdate) AS date, SUM(totalprice) AS amount
             FROM order_tb
@@ -1559,6 +1567,11 @@ app.get('/report/system', async (req, res) => {
             amount: parseInt(order.amount), // Nếu giá trị là tiền, dùng parseFloat
         }));
 
+        const formattedLast30DaysOrder = last30DaysOrder.map(order => ({
+            date: order.date,
+            amount: parseInt(order.amount, 10),
+        }));
+
         const formattedLast30DaysOrderValue = last30DaysOrderValue.map(order => ({
             date: order.date,
             amount: parseInt(order.amount), // Nếu giá trị là tiền, dùng parseFloat
@@ -1589,6 +1602,7 @@ app.get('/report/system', async (req, res) => {
             ...formattedOverview,
             last14DaysOrder: formattedLast14DaysOrder,
             last14DaysOrderValue: formattedLast14DaysOrderValue,
+            last30DaysOrder: formattedLast30DaysOrder,
             last30DaysOrderValue: formattedLast30DaysOrderValue,
             salesByCategory: formattedSalesByCategory,
             rankMap: formattedRankMap,

@@ -1602,6 +1602,18 @@ paths:
                           description: "Doanh thu"
                   
                   # Số lượng đơn hàng và doanh thu trong 30 ngày
+                  last30DaysOrder:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date-time
+                          description: "Ngày"
+                        amount:
+                          type: integer
+                          description: "Số lượng đơn hàng"                  
                   last30DaysOrderValue:
                     type: array
                     items:
