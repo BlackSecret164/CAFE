@@ -513,9 +513,34 @@ app.get("/product/list", async (req, res) => {
     res.status(404);
 })
 
+// app.post("/product", async (req, res) => {
+//     const { name, price, upsize, imageURL, category } = req.body;
+//     const client = await pool.connect();
+
+//     try {
+//         const query = `
+//             INSERT INTO product (name, price, upsize, imageURL, category)
+//             VALUES ($1, $2, $3, $4, $5)
+//         `;
+//         await client.query(query, [name, price, upsize, imageURL, category]);
+//         res.status(201).send({ message: "Product added successfully!" });
+//     } catch (error) {
+//         console.error("Error adding product:", error);
+//         res.status(500).send({ message: "Failed to add product" });
+//     } finally {
+//         client.release();
+//     }
+// });
+
 app.post("/product", async (req, res) => {
     const { name, price, upsize, imageURL, category } = req.body;
     const client = await pool.connect();
+
+    console.log("Payload received for creating product:", req.body);
+
+    if (!name || !price || !imageURL || !category) {
+        return res.status(400).json({ message: "Missing required fields" });
+    }
 
     try {
         const query = `
@@ -532,11 +557,45 @@ app.post("/product", async (req, res) => {
     }
 });
 
+// app.put("/product/:id", async (req, res) => {
+//     const { name, price, upsize, imageURL, category } = req.body; // Xóa phonecustomer khỏi body
+//     const { id } = req.params; // Lấy phonecustomer từ URL params
+//     const idAsInteger = parseInt(id, 10);
+//     const client = await pool.connect();
+
+//     try {
+//         const query = `
+//             UPDATE product
+//             SET name = $1, price = $2, upsize = $3, imageURL = $4, category =$5
+//             WHERE id = $6
+//         `;
+//         const result = await client.query(query, [name, price, upsize, imageURL, category, idAsInteger]);
+
+//         // Kiểm tra nếu không có hàng nào bị ảnh hưởng
+//         if (result.rowCount === 0) {
+//             return res.status(404).send({ message: "Product ${id} not found" });
+//         }
+
+//         res.status(200).send({ message: "Product edited successfully!" });
+//     } catch (error) {
+//         console.error("Error editing product:", error);
+//         res.status(500).send({ message: "Failed to edit product" });
+//     } finally {
+//         client.release();
+//     }
+// });
+
 app.put("/product/:id", async (req, res) => {
-    const { name, price, upsize, imageURL, category } = req.body; // Xóa phonecustomer khỏi body
-    const { id } = req.params; // Lấy phonecustomer từ URL params
+    const { name, price, upsize, imageURL, category } = req.body;
+    const { id } = req.params;
     const idAsInteger = parseInt(id, 10);
     const client = await pool.connect();
+
+    console.log("Payload received for editing product:", req.body);
+
+    if (!name || !price || !imageURL || !category) {
+        return res.status(400).json({ message: "Missing required fields" });
+    }
 
     try {
         const query = `
@@ -546,9 +605,8 @@ app.put("/product/:id", async (req, res) => {
         `;
         const result = await client.query(query, [name, price, upsize, imageURL, category, idAsInteger]);
 
-        // Kiểm tra nếu không có hàng nào bị ảnh hưởng
         if (result.rowCount === 0) {
-            return res.status(404).send({ message: "Product ${id} not found" });
+            return res.status(404).send({ message: `Product ${id} not found` });
         }
 
         res.status(200).send({ message: "Product edited successfully!" });
