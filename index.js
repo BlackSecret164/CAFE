@@ -545,7 +545,7 @@ app.get("/product/list", async (req, res) => {
 // });
 
 app.post("/product", async (req, res) => {
-    const { name, price, upsize, sizes, sizem, sizel, hot, cold, image, category } = req.body;
+    const { name, price, upsize, image, category } = req.body;
     const client = await pool.connect();
 
     console.log("Payload received for creating product:", req.body);
@@ -556,10 +556,10 @@ app.post("/product", async (req, res) => {
 
     try {
         const query = `
-            INSERT INTO product (name, price, upsize, sizes, sizem, sizel, hot, cold, image, category)
+            INSERT INTO product (name, price, upsize, image, category)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         `;
-        await client.query(query, [name, price, upsize, sizes, sizem, sizel, hot, cold, image, category]);
+        await client.query(query, [name, price, upsize, image, category]);
         res.status(201).send({ message: "Product added successfully!" });
     } catch (error) {
         console.error("Error adding product:", error);
