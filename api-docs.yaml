@@ -627,6 +627,16 @@ paths:
                   type: integer
                 upsize:
                   type: integer
+                sizes:
+                  type: boolean
+                sizem:
+                  type: boolean
+                sizel:
+                  type: boolean
+                hot:
+                  type: boolean
+                cold:
+                  type: boolean  
                 image:
                   type: string
                 category:
